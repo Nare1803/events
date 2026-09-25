@@ -1,0 +1,463 @@
+// ORÉ — data model
+//
+// Local development uses SQLite so the project runs with zero setup.
+// For production switch `provider` to "postgresql" and point DATABASE_URL at
+// your database; the schema is written to be portable between both.
+//
+// Conventions
+// - Primary keys are non-sequential cuids — they are never used as authorization.
+// - Fields documented as "LocalizedText" hold a JSON object such as
+//   {"hy": "...", "en": "...", "ru": "..."} (see src/lib/i18n/localized.ts).
+// - Enumerations are stored as strings and validated in the application layer
+//   (see src/lib/validation) to keep SQLite/PostgreSQL parity.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// ORÉ studio accounts. Customers do not need an account in V1 — they use a
+/// private review link — but the CUSTOMER role is reserved for a future portal.
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String
+  passwordHash      String
+  /// SUPER_ADMIN | STAFF | CUSTOMER
+  role              String              @default("STAFF")
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  sessions          Session[]
+  customer          Customer?
+  assignedProjects  InvitationProject[]
+  resolvedRevisions RevisionRequest[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  /// SHA-256 of the random session token; the raw token only lives in the cookie.
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Event {
+  id                String   @id @default(cuid())
+  /// Public URL segment, e.g. "anna-david".
+  slug              String   @unique
+  /// WEDDING | ENGAGEMENT | BIRTHDAY | BAPTISM | OTHER
+  eventType         String   @default("WEDDING")
+  /// DRAFT | PUBLISHED | ARCHIVED — publishing is driven by the project workflow.
+  status            String   @default("DRAFT")
+  /// LocalizedText
+  partnerOneName    String
+  /// LocalizedText — may be empty for single-host events (birthday, baptism).
+  partnerTwoName    String   @default("{}")
+  /// Start of the celebration as a UTC instant.
+  eventDate         DateTime
+  /// IANA timezone used to display times, e.g. "Asia/Yerevan".
+  timezone          String   @default("Asia/Yerevan")
+  /// hy | en | ru
+  defaultLocale     String   @default("hy")
+  /// Comma separated list of enabled locales, e.g. "hy,en,ru".
+  enabledLocales    String   @default("hy")
+  allowLocaleSwitch Boolean  @default(false)
+  /// LocalizedText — short line under the names in the hero.
+  heroSubtitle      String   @default("{}")
+  heroImage         String?
+  /// LocalizedText
+  welcomeText       String   @default("{}")
+  /// LocalizedText
+  invitationText    String   @default("{}")
+  /// LocalizedText
+  closingText       String   @default("{}")
+  closingImage      String?
+  socialImage       String?
+  /// LocalizedText
+  socialDescription String   @default("{}")
+  /// Invitations are personal: search engines are asked not to index by default.
+  indexable         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  invitationSettings InvitationSettings?
+  designSettings     DesignSettings?
+  musicSettings      MusicSettings?
+  dressCode          DressCode?
+  guests             Guest[]
+  rsvps              Rsvp[]
+  scheduleItems      ScheduleItem[]
+  locations          Location[]
+  galleryImages      GalleryImage[]
+  dailyStats         EventDailyStat[]
+  project            InvitationProject?
+
+  @@index([status])
+}
+
+model InvitationSettings {
+  id                   String    @id @default(cuid())
+  eventId              String    @unique
+  event                Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  rsvpEnabled          Boolean   @default(true)
+  rsvpDeadline         DateTime?
+  allowRsvpUpdates     Boolean   @default(true)
+  /// Allow guests without a personal link to RSVP from the general event URL.
+  openRsvp             Boolean   @default(true)
+  askTransportation    Boolean   @default(true)
+  askDietary           Boolean   @default(true)
+  askPhone             Boolean   @default(true)
+  askMessage           Boolean   @default(true)
+  askGuestCount        Boolean   @default(true)
+  askCompanions        Boolean   @default(true)
+  /// Allowed party size (including the guest) for RSVPs made from the general link.
+  defaultAllowedGuests Int       @default(2)
+  showCountdown        Boolean   @default(true)
+  showGallery          Boolean   @default(true)
+  showSchedule         Boolean   @default(true)
+  showLocations        Boolean   @default(true)
+  updatedAt            DateTime  @updatedAt
+}
+
+model DesignSettings {
+  id           String   @id @default(cuid())
+  eventId      String   @unique
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// Key in the theme registry (src/lib/themes).
+  themeId      String   @default("editorial-nude")
+  /// Optional hex override for the theme accent colour.
+  accentColor  String?
+  showMonogram Boolean  @default(true)
+  /// 0–80: darkness of the overlay on top of the hero image.
+  heroOverlay  Int      @default(35)
+  updatedAt    DateTime @updatedAt
+}
+
+model MusicSettings {
+  id              String   @id @default(cuid())
+  eventId         String   @unique
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  enabled         Boolean  @default(false)
+  /// NONE | UPLOAD | LIBRARY — where the track comes from.
+  source          String   @default("NONE")
+  trackUrl        String?
+  /// Staff confirm the couple owns the track or that it is licensed before it can play.
+  rightsConfirmed Boolean  @default(false)
+  /// Licence reference or rights note, e.g. "Artlist licence #1234".
+  licenseNote     String?
+  title           String?
+  artist          String?
+  /// 0–100
+  volume          Int      @default(60)
+  updatedAt       DateTime @updatedAt
+}
+
+model DressCode {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  enabled     Boolean  @default(false)
+  /// LocalizedText
+  title       String   @default("{}")
+  /// LocalizedText
+  description String   @default("{}")
+  /// JSON array of { hex: string, name: LocalizedText }.
+  swatches    String   @default("[]")
+  image       String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Guest {
+  id            String    @id @default(cuid())
+  eventId       String
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name          String
+  /// Personal URL segment, unique per event, e.g. "naz-k3f9".
+  slug          String
+  phone         String?
+  email         String?
+  /// Maximum party size including the guest.
+  allowedGuests Int       @default(1)
+  /// Preferred invitation language (hy | en | ru); falls back to the event default.
+  locale        String?
+  /// Private note for the couple. Never shown to guests.
+  notes         String?
+  /// ADMIN | IMPORT | PUBLIC_RSVP
+  source        String    @default("ADMIN")
+  /// NOT_SENT | SENT
+  inviteStatus  String    @default("NOT_SENT")
+  sentAt        DateTime?
+  openedAt      DateTime?
+  lastOpenedAt  DateTime?
+  openCount     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  rsvp          Rsvp?
+
+  @@unique([eventId, slug])
+  @@index([eventId, name])
+  @@index([eventId, openedAt])
+}
+
+model Rsvp {
+  id                   String   @id @default(cuid())
+  eventId              String
+  event                Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guestId              String   @unique
+  guest                Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  respondentName       String
+  /// ATTENDING | DECLINED
+  attendance           String
+  /// Party size including the respondent (0 when declined).
+  guestCount           Int      @default(1)
+  companionNames       String?
+  transportationNeeded Boolean?
+  dietaryRestrictions  String?
+  message              String?
+  phone                String?
+  locale               String?
+  /// Incremented each time the guest updates the response.
+  revision             Int      @default(1)
+  submittedAt          DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([eventId, attendance])
+  @@index([eventId, submittedAt])
+}
+
+model ScheduleItem {
+  id          String    @id @default(cuid())
+  eventId     String
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  position    Int       @default(0)
+  /// Local wall-clock time in the event timezone, "HH:mm".
+  startTime   String
+  /// LocalizedText
+  title       String
+  /// LocalizedText
+  description String    @default("{}")
+  /// Key from the invitation icon set (src/components/invitation/icons.tsx).
+  icon        String?
+  locationId  String?
+  location    Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([eventId, position])
+}
+
+model Location {
+  id            String         @id @default(cuid())
+  eventId       String
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  position      Int            @default(0)
+  /// CHURCH | CEREMONY | RECEPTION | PARTY | OTHER
+  kind          String         @default("OTHER")
+  /// LocalizedText
+  name          String
+  /// LocalizedText
+  description   String         @default("{}")
+  address       String
+  latitude      Float?
+  longitude     Float?
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  scheduleItems ScheduleItem[]
+
+  @@index([eventId, position])
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  position    Int      @default(0)
+  src         String
+  width       Int
+  height      Int
+  /// Tiny base64 blur placeholder generated on upload.
+  placeholder String?
+  alt         String   @default("")
+  createdAt   DateTime @default(now())
+
+  @@index([eventId, position])
+}
+
+/// Privacy-conscious aggregate counters — no IPs, user agents or device data.
+model EventDailyStat {
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// Calendar day in the event timezone, "YYYY-MM-DD".
+  day     String
+  views   Int    @default(0)
+  rsvps   Int    @default(0)
+
+  @@unique([eventId, day])
+}
+
+// ---------------------------------------------------------------------------
+// Service business: customers, packages, templates, projects and revisions.
+// ---------------------------------------------------------------------------
+
+model Customer {
+  id               String              @id @default(cuid())
+  name             String
+  email            String?
+  phone            String?
+  /// WHATSAPP | TELEGRAM | PHONE | EMAIL
+  preferredContact String              @default("WHATSAPP")
+  /// hy | en | ru — language for customer-facing pages (review, portal).
+  locale           String              @default("hy")
+  /// Reserved for a future customer portal login.
+  userId           String?             @unique
+  user             User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  projects         InvitationProject[]
+
+  @@index([email])
+}
+
+/// Configurable service packages (Essential / Signature / Bespoke). Prices are optional.
+model ServicePackage {
+  id                String              @id @default(cuid())
+  key               String              @unique
+  name              String
+  tagline           String              @default("")
+  description       String              @default("")
+  /// JSON array of short feature strings.
+  features          String              @default("[]")
+  /// null = not limited / not tracked.
+  includedRevisions Int?
+  /// Whole currency units; null = price not shown ("on request").
+  priceAmount       Int?
+  currency          String              @default("AMD")
+  active            Boolean             @default(true)
+  isDefault         Boolean             @default(false)
+  sortOrder         Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  projects          InvitationProject[]
+}
+
+/// Catalogue entry for a template. Presentation lives in code (src/lib/themes);
+/// this row controls customer-facing naming, visibility and ordering.
+model Template {
+  id          String              @id @default(cuid())
+  /// Matches a theme id in the code registry, e.g. "editorial-nude".
+  key         String              @unique
+  name        String
+  description String              @default("")
+  /// Listed on the public site. Only implemented templates can actually be chosen.
+  isPublic    Boolean             @default(true)
+  sortOrder   Int                 @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  projects    InvitationProject[]
+}
+
+model InvitationProject {
+  id              String            @id @default(cuid())
+  /// Human-friendly reference shown to staff and customers, e.g. "ORE-K3F9Q2".
+  reference       String            @unique
+  customerId      String
+  customer        Customer          @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  eventId         String            @unique
+  event           Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  packageId       String?
+  package         ServicePackage?   @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  /// Template the customer chose (the event's live template is DesignSettings.themeId).
+  templateId      String?
+  template        Template?         @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  /// NEW_REQUEST | CONTENT_INCOMPLETE | READY_FOR_DESIGN | IN_DESIGN | READY_FOR_REVIEW |
+  /// CHANGES_REQUESTED | APPROVED | PUBLISHED | ARCHIVED
+  status          String            @default("NEW_REQUEST")
+  /// INTAKE (public order form) | STAFF (created by ORÉ)
+  source          String            @default("INTAKE")
+  revisionCount   Int               @default(0)
+  /// Capability token for the private review page / couple portal (/review/[token]).
+  reviewToken     String            @unique
+  sentForReviewAt DateTime?
+  approvedAt      DateTime?
+  publishedAt     DateTime?
+  /// JSON snapshot of the customer's brief (vibe, "write it for me", music wishes, notes).
+  intake          String            @default("{}")
+  /// Private staff notes.
+  internalNotes   String?
+  assignedToId    String?
+  assignedTo      User?             @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  revisions       RevisionRequest[]
+  files           ProjectFile[]
+  activities      ProjectActivity[]
+
+  @@index([status])
+  @@index([customerId])
+}
+
+model RevisionRequest {
+  id            String            @id @default(cuid())
+  projectId     String
+  project       InvitationProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  message       String
+  /// OPEN | RESOLVED
+  status        String            @default("OPEN")
+  /// 1-based revision round.
+  round         Int
+  /// false when the round exceeds the package allowance (for future billing).
+  withinPackage Boolean           @default(true)
+  staffNote     String?
+  resolvedById  String?
+  resolvedBy    User?             @relation(fields: [resolvedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime          @default(now())
+  resolvedAt    DateTime?
+
+  @@index([projectId, status])
+}
+
+/// Files supplied by the customer. Rows without projectId are pending uploads
+/// from an unfinished order form (matched by draftKey) and are purged after a week.
+model ProjectFile {
+  id           String             @id @default(cuid())
+  projectId    String?
+  project      InvitationProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  draftKey     String?
+  /// HERO | GALLERY | ENGAGEMENT | DRESS_CODE | MUSIC
+  kind         String
+  url          String
+  originalName String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  placeholder  String?
+  createdAt    DateTime           @default(now())
+
+  @@index([draftKey])
+  @@index([projectId])
+}
+
+/// Human-readable project timeline.
+model ProjectActivity {
+  id        String            @id @default(cuid())
+  projectId String
+  project   InvitationProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Who acted: a staff member's name, "Customer" or "System".
+  actor     String
+  message   String
+  createdAt DateTime          @default(now())
+
+  @@index([projectId, createdAt])
+}

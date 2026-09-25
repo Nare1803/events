@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+/* Brand palette + font stacks available as Tailwind utilities (bg-ivory, font-serif …). */
+@theme inline {
+  --color-ivory: #f5f0ea;
+  --color-nude: #e8ddd4;
+  --color-taupe: #bbaa9d;
+  --color-mocha: #806d62;
+  --color-espresso: #292421;
+
+  /* Invitation theme tokens — values come from the active theme (src/lib/themes). */
+  --color-inv-bg: var(--inv-bg);
+  --color-inv-surface: var(--inv-surface);
+  --color-inv-text: var(--inv-text);
+  --color-inv-muted: var(--inv-muted);
+  --color-inv-accent: var(--inv-accent);
+  --color-inv-line: var(--inv-line);
+  --color-inv-inverse-bg: var(--inv-inverse-bg);
+  --color-inv-inverse-text: var(--inv-inverse-text);
+
+  --font-serif: var(--font-display), var(--font-display-hy), "Times New Roman", serif;
+  --font-sans: var(--font-body), var(--font-body-hy), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --animate-rise: rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-settle: settle 3.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-drift: drift 2.8s ease-in-out infinite;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #f5f0ea;
+    color: #292421;
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  button,
+  [role="button"],
+  label[for],
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Invitation primitives
+ * ------------------------------------------------------------------------ */
+@layer components {
+  .inv-root {
+    background: var(--inv-bg);
+    color: var(--inv-text);
+    font-family: var(--inv-font-body);
+  }
+
+  .inv-display {
+    font-family: var(--inv-font-display);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+  }
+
+  .inv-eyebrow {
+    font-family: var(--inv-font-body);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: var(--inv-eyebrow-tracking);
+    text-transform: uppercase;
+  }
+
+  .inv-section {
+    padding-block: var(--inv-section-space);
+  }
+
+  .inv-rule {
+    display: block;
+    width: 1px;
+    height: 3.5rem;
+    background: currentColor;
+    opacity: 0.35;
+  }
+
+  .inv-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .inv-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.6rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+    transform-origin: left;
+    transition: opacity 0.4s var(--ease-editorial), transform 0.6s var(--ease-editorial);
+  }
+
+  .inv-link:hover::after {
+    opacity: 1;
+  }
+
+  .inv-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 3.25rem;
+    padding: 0 2.25rem;
+    border: var(--inv-border) solid currentColor;
+    border-radius: var(--inv-radius);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    transition: background-color 0.5s var(--ease-editorial), color 0.5s var(--ease-editorial);
+  }
+
+  .inv-button:hover:not(:disabled) {
+    background: var(--inv-text);
+    color: var(--inv-bg);
+  }
+
+  .inv-button:disabled {
+    opacity: 0.55;
+  }
+
+  /* Filled variant for the primary decision (e.g. approving a preview). */
+  .inv-button-solid {
+    background: var(--inv-text);
+    color: var(--inv-bg);
+    border-color: var(--inv-text);
+  }
+
+  .inv-button-solid:hover:not(:disabled) {
+    background: transparent;
+    color: var(--inv-text);
+  }
+
+  .inv-field {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0;
+    border: 0;
+    border-bottom: var(--inv-border) solid var(--inv-line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--inv-text);
+    font-size: 1rem;
+    transition: border-color 0.4s var(--ease-editorial);
+  }
+
+  .inv-field:focus {
+    outline: none;
+    border-bottom-color: var(--inv-text);
+  }
+
+  .inv-field::placeholder {
+    color: var(--inv-muted);
+    opacity: 0.7;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Motion — restrained, and disabled for users who prefer reduced motion.
+ * ------------------------------------------------------------------------ */
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 1.25rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes settle {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+  50% { transform: translate3d(0, 0.6rem, 0); opacity: 1; }
+}
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 2rem, 0);
+  transition: opacity 1.2s var(--ease-editorial), transform 1.4s var(--ease-editorial);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-image {
+  clip-path: inset(12% 0 0 0);
+  transition: clip-path 1.6s var(--ease-editorial);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-image > * {
+  transform: scale(1.12);
+  transition: transform 2.2s var(--ease-editorial);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-image.is-visible {
+  clip-path: inset(0 0 0 0);
+}
+
+.reveal-image.is-visible > * {
+  transform: scale(1);
+}
+
+.eq-bar {
+  transform-origin: bottom;
+  animation: eq 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal-image,
+  .reveal-image > * {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}

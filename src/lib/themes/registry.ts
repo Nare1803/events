@@ -23,11 +23,12 @@ const editorialNude: Theme = {
     },
     fonts: { display: SERIF, body: SANS },
     radius: "0px",
+    cardRadius: "0px",
     borderWidth: "1px",
     sectionSpacing: "clamp(6rem, 14vw, 11rem)",
     eyebrowTracking: "0.32em",
   },
-  variants: { hero: "full-bleed", intro: "veil" },
+  variants: { hero: "full-bleed", intro: "veil", sections: "editorial" },
 };
 
 const blackIvory: Theme = {
@@ -48,11 +49,12 @@ const blackIvory: Theme = {
     },
     fonts: { display: SERIF, body: SANS },
     radius: "0px",
+    cardRadius: "0px",
     borderWidth: "1px",
     sectionSpacing: "clamp(6rem, 14vw, 11rem)",
     eyebrowTracking: "0.36em",
   },
-  variants: { hero: "framed", intro: "letter" },
+  variants: { hero: "framed", intro: "letter", sections: "editorial" },
 };
 
 const modernGarden: Theme = {
@@ -74,11 +76,12 @@ const modernGarden: Theme = {
     },
     fonts: { display: SERIF, body: SANS },
     radius: "999px",
+    cardRadius: "2rem",
     borderWidth: "1px",
     sectionSpacing: "clamp(6.5rem, 15vw, 12rem)",
     eyebrowTracking: "0.3em",
   },
-  variants: { hero: "botanical", intro: "bloom" },
+  variants: { hero: "botanical", intro: "bloom", sections: "garden" },
 };
 
 /** Catalogue entries not yet implemented in code — shown as "coming soon", never selectable. */
@@ -108,7 +111,7 @@ export function isSelectableTheme(id: string): boolean {
 
 /** CSS custom properties consumed by the invitation components (see globals.css). */
 export function themeStyle(theme: Theme, overrides: ThemeOverrides = {}): ThemeStyle {
-  const { colors, fonts, radius, borderWidth, sectionSpacing, eyebrowTracking } = theme.tokens;
+  const { colors, fonts, radius, cardRadius, borderWidth, sectionSpacing, eyebrowTracking } = theme.tokens;
   return {
     "--inv-bg": colors.background,
     "--inv-surface": colors.surface,
@@ -121,6 +124,7 @@ export function themeStyle(theme: Theme, overrides: ThemeOverrides = {}): ThemeS
     "--inv-font-display": fonts.display,
     "--inv-font-body": fonts.body,
     "--inv-radius": radius,
+    "--inv-card-radius": cardRadius,
     "--inv-border": borderWidth,
     "--inv-section-space": sectionSpacing,
     "--inv-eyebrow-tracking": eyebrowTracking,

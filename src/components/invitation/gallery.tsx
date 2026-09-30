@@ -72,7 +72,7 @@ function GardenGallery({ view, images }: { view: InvitationView; images: Invitat
                     "relative w-full overflow-hidden bg-inv-bg",
                     arch ? "rounded-t-full rounded-b-[var(--inv-card-radius)]" : "rounded-[var(--inv-card-radius)]",
                   )}
-                  style={{ aspectRatio: arch ? "3 / 4" :  }}
+                  style={{ aspectRatio: arch ? "3 / 4" : `${image.width} / ${image.height}` }}
                 >
                   <Image
                     src={image.src}

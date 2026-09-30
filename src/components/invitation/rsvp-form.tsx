@@ -263,7 +263,7 @@ export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: Rs
   return (
     <form onSubmit={onSubmit} noValidate className="mx-auto max-w-xl" aria-busy={submitting}>
       {rememberedEntry?.url && (
-        <p className="mb-10 border border-inv-line px-5 py-4 text-center text-sm leading-6 text-inv-muted">
+        <p className="mb-10 rounded-[var(--inv-card-radius)] border border-inv-line px-5 py-4 text-center text-sm leading-6 text-inv-muted">
           {rememberedEntry.name && <span className="block font-serif text-lg text-inv-text">{rememberedEntry.name}</span>}
           <a href={rememberedEntry.url} className="inv-link">
             {t.changeResponse}
@@ -301,7 +301,7 @@ export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: Rs
                 <label
                   key={option}
                   className={cn(
-                    "flex min-h-16 items-center gap-4 border px-5 py-4 transition-colors duration-500",
+                    "flex min-h-16 items-center gap-4 rounded-[var(--inv-card-radius)] border px-5 py-4 transition-colors duration-500",
                     checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
                   )}
                 >
@@ -381,7 +381,7 @@ export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: Rs
                       <label
                         key={option}
                         className={cn(
-                          "flex min-h-12 min-w-24 items-center justify-center border px-6 text-sm transition-colors duration-500 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2",
+                          "flex min-h-12 min-w-24 items-center justify-center rounded-[var(--inv-radius)] border px-6 text-sm transition-colors duration-500 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2",
                           checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
                         )}
                       >

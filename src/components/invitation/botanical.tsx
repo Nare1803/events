@@ -31,3 +31,14 @@ export function Sprig({ className, style }: { className?: string; style?: CSSPro
     </svg>
   );
 }
+
+/** A short vertical stem with two leaves, used to join stacked garden cards. */
+export function Stem({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 56" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" className={cn("h-14 w-6", className)} aria-hidden="true">
+      <path d="M12 0 V56" />
+      <path d="M12 30 C 8 27, 5 22, 4 17 C 9 19, 11 24, 12 30 Z" />
+      <path d="M12 22 C 16 19, 19 14, 20 9 C 15 11, 13 16, 12 22 Z" />
+    </svg>
+  );
+}

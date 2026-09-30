@@ -2,6 +2,8 @@ import type { CSSProperties } from "react";
 
 export type HeroVariant = "full-bleed" | "framed" | "botanical";
 export type IntroVariant = "veil" | "letter" | "bloom";
+/** Layout family for the sections below the hero (welcome, gallery, schedule…). */
+export type SectionsVariant = "editorial" | "garden";
 
 export type ThemeTokens = {
   colors: {
@@ -19,7 +21,10 @@ export type ThemeTokens = {
   };
   /** CSS font-family stacks; next/font variables are defined in the root layout. */
   fonts: { display: string; body: string };
+  /** Buttons */
   radius: string;
+  /** Photos, cards and option tiles */
+  cardRadius: string;
   borderWidth: string;
   /** Vertical rhythm between invitation sections */
   sectionSpacing: string;
@@ -34,7 +39,7 @@ export type Theme = {
   /** Only available themes can be selected; others are previewed as "coming soon". */
   available: boolean;
   tokens: ThemeTokens;
-  variants: { hero: HeroVariant; intro: IntroVariant };
+  variants: { hero: HeroVariant; intro: IntroVariant; sections: SectionsVariant };
 };
 
 export type ThemeOverrides = { accentColor?: string | null };

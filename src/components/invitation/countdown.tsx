@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { Dictionary } from "@/lib/i18n";
+import { cn } from "@/lib/utils/cn";
 import { Reveal } from "./reveal";
 import { Section } from "./section";
 
@@ -26,7 +27,7 @@ function split(total: number): Remaining {
   };
 }
 
-export function Countdown({ dateISO, t }: { dateISO: string; t: Dictionary["countdown"] }) {
+export function Countdown({ dateISO, t, garden = false }: { dateISO: string; t: Dictionary["countdown"]; garden?: boolean }) {
   // null on the server and during hydration → stable placeholders, no mismatch.
   const now = useSyncExternalStore(subscribe, getNowSecond, getServerSnapshot);
   const target = Math.floor(new Date(dateISO).getTime() / 1000);
@@ -52,9 +53,15 @@ export function Countdown({ dateISO, t }: { dateISO: string; t: Dictionary["coun
             {finalMessage}
           </p>
         ) : (
-          <dl className="grid grid-cols-4 divide-x divide-inv-line border-y border-inv-line">
+          <dl className={cn("grid grid-cols-4", garden ? "gap-2 sm:gap-4" : "divide-x divide-inv-line border-y border-inv-line")}>
             {units.map(({ key, label }) => (
-              <div key={key} className="flex flex-col-reverse items-center gap-3 px-1 py-8 sm:py-12">
+              <div
+                key={key}
+                className={cn(
+                  "flex flex-col-reverse items-center gap-3 px-1 py-8 sm:py-12",
+                  garden && "rounded-[var(--inv-card-radius)] bg-inv-surface py-7 sm:py-10",
+                )}
+              >
                 <dt className="inv-eyebrow text-[0.575rem] text-inv-muted sm:text-[0.6875rem]">{label}</dt>
                 <dd className="inv-display text-[2.6rem] tabular-nums sm:text-7xl" suppressHydrationWarning>
                   {remaining ? String(remaining[key]).padStart(2, "0") : "··"}

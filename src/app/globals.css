@@ -186,6 +186,18 @@
     color: var(--inv-muted);
     opacity: 0.7;
   }
+
+  /* Garden sections: soft filled fields instead of underlines. */
+  [data-sections="garden"] .inv-field {
+    padding-inline: 1.25rem;
+    border: var(--inv-border) solid var(--inv-line);
+    border-radius: 1.25rem;
+    background: var(--inv-bg);
+  }
+
+  [data-sections="garden"] .inv-field:focus {
+    border-color: var(--inv-accent);
+  }
 }
 
 /* ---------------------------------------------------------------------------

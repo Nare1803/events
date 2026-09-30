@@ -18,25 +18,28 @@ import { Welcome } from "./welcome";
  */
 export function InvitationPage({ view, after }: { view: InvitationView; after?: ReactNode }) {
   const { settings, t } = view;
+  const garden = view.theme.sections === "garden";
   return (
     <InvitationShell view={view}>
       <Hero view={view} />
       <Welcome view={view} />
       {settings.showGallery && <Gallery view={view} />}
-      {settings.showCountdown && <Countdown dateISO={view.event.dateISO} t={t.countdown} />}
+      {settings.showCountdown && <Countdown dateISO={view.event.dateISO} t={t.countdown} garden={garden} />}
       {settings.showSchedule && <Schedule view={view} />}
       {settings.showLocations && <Locations view={view} />}
       <DressCode view={view} />
       {settings.rsvpEnabled && (
         <Section id="rsvp" eyebrow={t.rsvp.eyebrow} title={t.rsvp.title}>
-          <RsvpForm
-            eventSlug={view.event.slug}
-            locale={view.locale}
-            guest={view.guest}
-            existing={view.rsvp}
-            settings={settings}
-            t={t.rsvp}
-          />
+          <div className={garden ? "mx-auto max-w-2xl rounded-[var(--inv-card-radius)] bg-inv-surface px-5 py-10 sm:px-12 sm:py-14" : undefined}>
+            <RsvpForm
+              eventSlug={view.event.slug}
+              locale={view.locale}
+              guest={view.guest}
+              existing={view.rsvp}
+              settings={settings}
+              t={t.rsvp}
+            />
+          </div>
         </Section>
       )}
       <Final view={view} />

@@ -8,6 +8,7 @@ import { Section } from "./section";
 export function Locations({ view }: { view: InvitationView }) {
   const { locations, t } = view;
   if (locations.length === 0) return null;
+  const garden = view.theme.sections === "garden";
 
   return (
     <Section id="locations" eyebrow={t.locations.eyebrow} title={t.locations.title}>
@@ -15,10 +16,10 @@ export function Locations({ view }: { view: InvitationView }) {
         {locations.map((location, index) => {
           const flipped = index % 2 === 1;
           return (
-            <article key={location.id} className="grid items-center gap-8 md:grid-cols-12 md:gap-12">
+            <article key={location.id} className={cn("grid items-center md:grid-cols-12 md:gap-12", garden ? "gap-0" : "gap-8")}>
               {location.image && (
                 <Reveal variant="image" className={cn("md:col-span-7", flipped && "md:order-2 md:col-start-6")}>
-                  <div className="relative aspect-[4/3] overflow-hidden bg-inv-surface">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--inv-card-radius)] bg-inv-surface">
                     <Image src={location.image} alt="" fill sizes="(min-width: 768px) 55vw, 100vw" quality={80} className="object-cover" />
                   </div>
                 </Reveal>
@@ -28,6 +29,9 @@ export function Locations({ view }: { view: InvitationView }) {
                 className={cn(
                   location.image ? "md:col-span-5" : "md:col-span-8 md:col-start-3 text-center",
                   flipped && location.image && "md:order-1 md:col-start-1",
+                  // Garden: details sit on a sage card that overlaps the photo on phones.
+                  garden && "relative rounded-[var(--inv-card-radius)] bg-inv-surface px-7 py-9 sm:px-10",
+                  garden && location.image && "mx-4 -mt-16 md:mx-0 md:mt-0",
                 )}
               >
                 <p className="inv-eyebrow text-inv-accent">{t.locations.kinds[location.kind]}</p>

@@ -64,6 +64,7 @@ export function InvitationShell({ view, children }: ShellProps) {
       lang={view.locale}
       style={view.theme.style}
       data-theme={view.theme.id}
+      data-sections={view.theme.sections}
       data-opened={phase !== "closed"}
       className="inv-root group/inv min-h-dvh"
     >

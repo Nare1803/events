@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { InvitationView } from "@/types/invitation";
+import { Sprig } from "./botanical";
 
 type HeroProps = { view: InvitationView };
 
@@ -12,9 +13,15 @@ const enter = (delay: number, className = "") => ({
   style: { animationDelay: `${delay}ms` },
 });
 
-function Names({ view, size }: HeroProps & { size: "xl" | "lg" }) {
+const NAME_SIZES = {
+  xl: "text-[clamp(3.75rem,17vw,10rem)]",
+  lg: "text-[clamp(3.25rem,13vw,7.5rem)]",
+  md: "text-[clamp(2.75rem,11vw,4.75rem)]",
+};
+
+function Names({ view, size }: HeroProps & { size: keyof typeof NAME_SIZES }) {
   const { partnerOne, partnerTwo } = view.event;
-  const text = size === "xl" ? "text-[clamp(3.75rem,17vw,10rem)]" : "text-[clamp(3.25rem,13vw,7.5rem)]";
+  const text = NAME_SIZES[size];
   return (
     <h1 className={`inv-display ${text} leading-[0.9]`}>
       <span {...enter(250, "block")}>{partnerOne}</span>
@@ -38,7 +45,9 @@ function ScrollCue({ label }: { label: string }) {
 }
 
 export function Hero({ view }: HeroProps) {
-  return view.theme.hero === "framed" ? <FramedHero view={view} /> : <FullBleedHero view={view} />;
+  if (view.theme.hero === "framed") return <FramedHero view={view} />;
+  if (view.theme.hero === "botanical") return <BotanicalHero view={view} />;
+  return <FullBleedHero view={view} />;
 }
 
 function FullBleedHero({ view }: HeroProps) {
@@ -102,6 +111,37 @@ function FramedHero({ view }: HeroProps) {
           <p {...enter(1100, "font-serif text-xl italic text-inv-muted")}>{event.heroSubtitle}</p>
         )}
       </div>
+      <ScrollCue label={t.hero.scroll} />
+    </header>
+  );
+}
+
+function BotanicalHero({ view }: HeroProps) {
+  const { event, theme, t } = view;
+  return (
+    <header className="flex min-h-svh flex-col items-center justify-center gap-8 bg-inv-bg px-5 py-14 text-center text-inv-text">
+      <div {...enter(100, "flex flex-col items-center gap-4 text-inv-accent")}>
+        <Sprig />
+        <p className="inv-eyebrow">{theme.showMonogram ? event.monogram : event.label}</p>
+      </div>
+
+      <div className="relative w-full max-w-md">
+        {event.heroImage && (
+          <div {...enter(200, "relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem]")}>
+            <Image src={event.heroImage} alt="" fill preload sizes="(min-width: 480px) 448px, 100vw" quality={80} className="object-cover" />
+          </div>
+        )}
+        <div {...enter(300, `relative mx-5 rounded-[2rem] bg-inv-surface px-6 py-9 ${event.heroImage ? "-mt-20" : ""}`)}>
+          <Names view={view} size="md" />
+          <p {...enter(900, "inv-eyebrow mt-7 tracking-[0.42em] text-inv-accent")}>
+            <time dateTime={event.dateISO}>{event.dotDate}</time>
+          </p>
+          {event.heroSubtitle && (
+            <p {...enter(1100, "mt-4 font-serif text-lg italic text-inv-muted")}>{event.heroSubtitle}</p>
+          )}
+        </div>
+      </div>
+
       <ScrollCue label={t.hero.scroll} />
     </header>
   );

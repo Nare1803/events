@@ -1,4 +1,5 @@
 import type { ThemeTokens } from "@/lib/themes";
+import { Sprig } from "@/components/invitation/botanical";
 import { cn } from "@/lib/utils/cn";
 
 type TemplatePreviewProps = {
@@ -17,13 +18,28 @@ type TemplatePreviewProps = {
 export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", className, muted }: TemplatePreviewProps) {
   const c = tokens.colors;
   const [one, two] = name.split(" & ");
+  const light = heroVariant === "framed" || heroVariant === "botanical";
   return (
     <div
       className={cn("relative aspect-[9/16] w-full overflow-hidden", muted && "grayscale-[60%] opacity-70", className)}
-      style={{ background: heroVariant === "framed" ? c.background : c.inverseBackground, color: heroVariant === "framed" ? c.text : c.inverseText }}
+      style={{ background: light ? c.background : c.inverseBackground, color: light ? c.text : c.inverseText }}
       aria-hidden="true"
     >
-      {heroVariant === "framed" ? (
+      {heroVariant === "botanical" ? (
+        <div className="flex h-full flex-col items-center justify-center gap-[5%] px-[9%] text-center">
+          <Sprig className="h-auto w-[45%]" style={{ color: c.accent }} />
+          <div className="w-full">
+            <div className="aspect-[4/5] w-full overflow-hidden rounded-[1.25em]">
+              {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail */}
+              <img src="/demo/hero.webp" alt="" className="h-full w-full object-cover" loading="lazy" />
+            </div>
+            <div className="relative mx-[9%] -mt-[22%] flex flex-col items-center gap-[0.5em] rounded-[1em] px-[6%] py-[9%]" style={{ background: c.surface }}>
+              <Names one={one} two={two} scale={0.75} />
+              <span className="text-[0.5em] tracking-[0.35em]" style={{ color: c.accent }}>18 · 07 · 2027</span>
+            </div>
+          </div>
+        </div>
+      ) : heroVariant === "framed" ? (
         <div className="flex h-full flex-col items-center justify-center gap-[6%] px-[12%] text-center">
           <div className="aspect-[3/4] w-[62%] overflow-hidden rounded-t-full">
             {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail */}
@@ -47,9 +63,9 @@ export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", cl
   );
 }
 
-function Names({ one, two }: { one: string; two?: string }) {
+function Names({ one, two, scale = 1 }: { one: string; two?: string; scale?: number }) {
   return (
-    <span className="font-serif text-[2.6em] font-light leading-[0.95]">
+    <span className="font-serif font-light leading-[0.95]" style={{ fontSize: `${2.6 * scale}em` }}>
       {one}
       {two && (
         <>

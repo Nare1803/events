@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
-export type HeroVariant = "full-bleed" | "framed";
-export type IntroVariant = "veil" | "letter";
+export type HeroVariant = "full-bleed" | "framed" | "botanical";
+export type IntroVariant = "veil" | "letter" | "bloom";
 
 export type ThemeTokens = {
   colors: {

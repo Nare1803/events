@@ -3,6 +3,7 @@
 import { interpolate, type Dictionary } from "@/lib/i18n";
 import type { IntroVariant } from "@/lib/themes";
 import { cn } from "@/lib/utils/cn";
+import { Sprig } from "./botanical";
 
 export type IntroPhase = "closed" | "opening" | "open";
 
@@ -38,15 +39,25 @@ export function IntroScreen({ phase, variant, guestName, partnerOne, partnerTwo,
       aria-labelledby="intro-names"
       className={cn(
         "fixed inset-0 z-50 flex items-center justify-center bg-inv-bg text-inv-text",
-        variant === "veil"
-          ? "transition-[clip-path] duration-[1300ms] ease-[var(--ease-curtain)] [clip-path:inset(0_0_0_0)]"
-          : "transition-opacity duration-1000 ease-[var(--ease-editorial)]",
-        opening && (variant === "veil" ? "[clip-path:inset(0_0_100%_0)] delay-300" : "opacity-0 delay-300"),
+        variant === "veil" && "transition-[clip-path] duration-[1300ms] ease-[var(--ease-curtain)] [clip-path:inset(0_0_0_0)]",
+        variant === "bloom" && "transition-[clip-path] duration-[1400ms] ease-[var(--ease-curtain)] [clip-path:circle(150%_at_50%_50%)]",
+        variant === "letter" && "transition-opacity duration-1000 ease-[var(--ease-editorial)]",
+        opening && "delay-300",
+        opening && variant === "veil" && "[clip-path:inset(0_0_100%_0)]",
+        opening && variant === "bloom" && "[clip-path:circle(0%_at_50%_50%)]",
+        opening && variant === "letter" && "opacity-0",
       )}
     >
-      {/* Hairline frame */}
-      <div className="pointer-events-none absolute inset-3 border border-inv-line sm:inset-6" aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-5 border border-inv-line/60 sm:inset-8" aria-hidden="true" />
+      {variant === "bloom" ? (
+        /* Garden arch */
+        <div className="pointer-events-none absolute inset-x-4 inset-y-6 rounded-t-full rounded-b-[2.5rem] border border-inv-line sm:inset-x-8 sm:inset-y-8" aria-hidden="true" />
+      ) : (
+        /* Hairline frame */
+        <>
+          <div className="pointer-events-none absolute inset-3 border border-inv-line sm:inset-6" aria-hidden="true" />
+          <div className="pointer-events-none absolute inset-5 border border-inv-line/60 sm:inset-8" aria-hidden="true" />
+        </>
+      )}
 
       <div
         className={cn(
@@ -54,6 +65,11 @@ export function IntroScreen({ phase, variant, guestName, partnerOne, partnerTwo,
           opening && "-translate-y-4 opacity-0",
         )}
       >
+        {variant === "bloom" && (
+          <span {...rise(100)} className="animate-rise mb-6 block text-inv-accent">
+            <Sprig />
+          </span>
+        )}
         <p {...rise(200)} className="animate-rise inv-eyebrow text-inv-accent">
           {guestName ? interpolate(t.intro.forGuest, { name: guestName }) : label}
         </p>

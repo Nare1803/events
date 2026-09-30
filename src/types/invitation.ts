@@ -1,6 +1,6 @@
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/locales";
-import type { HeroVariant, IntroVariant, ThemeStyle } from "@/lib/themes";
+import type { HeroVariant, IntroVariant, SectionsVariant, ThemeStyle } from "@/lib/themes";
 import type { Attendance, EventType, LocationKind } from "@/lib/validation/enums";
 
 /** Fully resolved, serialisable data for one invitation render. Contains no admin-only fields. */
@@ -44,6 +44,7 @@ export type InvitationView = {
     style: ThemeStyle;
     hero: HeroVariant;
     intro: IntroVariant;
+    sections: SectionsVariant;
     showMonogram: boolean;
     heroOverlay: number;
   };

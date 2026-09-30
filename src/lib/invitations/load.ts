@@ -141,6 +141,7 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
       style: themeStyle(theme, { accentColor: design?.accentColor }),
       hero: theme.variants.hero,
       intro: theme.variants.intro,
+      sections: theme.variants.sections,
       showMonogram: design?.showMonogram ?? true,
       heroOverlay: Math.min(80, Math.max(0, design?.heroOverlay ?? 35)),
     },

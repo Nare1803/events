@@ -55,6 +55,32 @@ const blackIvory: Theme = {
   variants: { hero: "framed", intro: "letter" },
 };
 
+const modernGarden: Theme = {
+  id: "modern-garden",
+  name: "Modern Garden",
+  description: "Soft sage, forest green and airy layouts with botanical details.",
+  available: true,
+  tokens: {
+    colors: {
+      background: "#F4F5EE",
+      surface: "#E4EADB",
+      text: "#1F2A22",
+      // Muted and accent greens keep small text ≥ 4.5:1 on both background and surface (WCAG AA).
+      muted: "#4C5A4F",
+      accent: "#4A6649",
+      line: "rgba(31, 42, 34, 0.16)",
+      inverseBackground: "#26352A",
+      inverseText: "#F4F5EE",
+    },
+    fonts: { display: SERIF, body: SANS },
+    radius: "999px",
+    borderWidth: "1px",
+    sectionSpacing: "clamp(6.5rem, 15vw, 12rem)",
+    eyebrowTracking: "0.3em",
+  },
+  variants: { hero: "botanical", intro: "bloom" },
+};
+
 /** Catalogue entries not yet implemented in code — shown as "coming soon", never selectable. */
 function upcoming(id: string, name: string, description: string): Theme {
   return { ...editorialNude, id, name, description, available: false };
@@ -64,7 +90,7 @@ export const THEMES: Theme[] = [
   editorialNude,
   blackIvory,
   upcoming("romantic-film", "Romantic Film", "Grain, light leaks and cinematic stills."),
-  upcoming("modern-garden", "Modern Garden", "Soft greens, airy layouts and botanical details."),
+  modernGarden,
   upcoming("old-money", "Old Money", "Heritage serif, crest monograms and quiet luxury."),
   upcoming("armenian-heritage", "Armenian Heritage", "Ornament inspired by Armenian manuscripts and carpets."),
 ];

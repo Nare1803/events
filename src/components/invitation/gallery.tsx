@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils/cn";
 import type { InvitationView } from "@/types/invitation";
 import { Reveal } from "./reveal";
 import { Section } from "./section";
@@ -22,6 +23,7 @@ const LAYOUT = [
 export function Gallery({ view }: { view: InvitationView }) {
   const images = view.gallery.slice(0, LAYOUT.length);
   if (images.length === 0) return null;
+  if (view.theme.sections === "garden") return <GardenGallery view={view} images={images} />;
 
   return (
     <Section id="story" eyebrow={view.t.gallery.eyebrow} tone="surface" className="overflow-hidden">
@@ -37,6 +39,46 @@ export function Gallery({ view }: { view: InvitationView }) {
                     alt={image.alt}
                     fill
                     sizes={layout.sizes}
+                    quality={80}
+                    className="object-cover"
+                    placeholder={image.placeholder ? "blur" : "empty"}
+                    blurDataURL={image.placeholder ?? undefined}
+                  />
+                </div>
+              </Reveal>
+            </figure>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+/**
+ * Garden composition: an airy two/three-column masonry of rounded photos where
+ * every third picture is cropped into an arch, echoing the hero and intro.
+ */
+function GardenGallery({ view, images }: { view: InvitationView; images: InvitationView["gallery"] }) {
+  return (
+    <Section id="story" eyebrow={view.t.gallery.eyebrow} tone="surface">
+      <div className="mx-auto max-w-5xl columns-2 gap-4 sm:gap-6 md:columns-3">
+        {images.map((image, index) => {
+          const arch = index % 3 === 1;
+          return (
+            <figure key={image.id} className="mb-4 break-inside-avoid sm:mb-6">
+              <Reveal variant="image" delay={(index % 3) * 120}>
+                <div
+                  className={cn(
+                    "relative w-full overflow-hidden bg-inv-bg",
+                    arch ? "rounded-t-full rounded-b-[var(--inv-card-radius)]" : "rounded-[var(--inv-card-radius)]",
+                  )}
+                  style={{ aspectRatio: arch ? "3 / 4" :  }}
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="(min-width: 768px) 33vw, 50vw"
                     quality={80}
                     className="object-cover"
                     placeholder={image.placeholder ? "blur" : "empty"}

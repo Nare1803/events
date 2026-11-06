@@ -10,6 +10,7 @@ import { isStaffRole } from "@/lib/auth/roles";
 import { getCurrentUser } from "@/lib/auth/session";
 import type { InvitationView } from "@/types/invitation";
 import { parseSwatches } from "./dress-code";
+import { buildHeritageView, heritageSecondLocale } from "./heritage";
 import { monogram } from "./monogram";
 
 /**
@@ -87,14 +88,19 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
 
   const defaultLocale: Locale = isLocale(event.defaultLocale) ? event.defaultLocale : "hy";
   const locales = parseLocaleList(event.enabledLocales, defaultLocale);
-  const locale = chooseLocale(lang, guest?.locale, defaultLocale, locales, event.allowLocaleSwitch);
+  const design = event.designSettings;
+  const theme = getTheme(themeId ?? design?.themeId);
+  const readerLocale = chooseLocale(lang, guest?.locale, defaultLocale, locales, event.allowLocaleSwitch);
+  // Armenian Heritage is Armenian-first: the main text is always Armenian and the
+  // reader's language becomes the line under it; the switcher only picks that line.
+  const heritage = theme.variants.sections === "heritage";
+  const locale: Locale = heritage ? "hy" : readerLocale;
+  const switchLocales = heritage ? locales.filter((l) => l !== "hy") : locales;
   const t = getDictionary(locale);
   const L = (raw: string | null | undefined) => resolveLocalized(raw, locale, defaultLocale);
   const tz = event.timezone;
 
   const settings = event.invitationSettings;
-  const design = event.designSettings;
-  const theme = getTheme(themeId ?? design?.themeId);
   const eventType = asEnum(EVENT_TYPES, event.eventType, "WEDDING");
   const live = mode === "guest" && event.status === "PUBLISHED";
   const banner =
@@ -109,8 +115,8 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
 
   return {
     locale,
-    locales,
-    allowLocaleSwitch: event.allowLocaleSwitch && locales.length > 1,
+    locales: switchLocales,
+    allowLocaleSwitch: event.allowLocaleSwitch && switchLocales.length > 1,
     t,
     isPreview: !live,
     banner,
@@ -192,6 +198,7 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
       title: L(item.title),
       description: L(item.description),
       icon: item.icon,
+      locationId: item.locationId,
       locationName: item.location ? L(item.location.name) : null,
     })),
     locations: event.locations.map((loc) => {
@@ -228,5 +235,13 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
             volume: Math.min(100, Math.max(0, event.musicSettings.volume)) / 100,
           }
         : null,
+    heritage: heritage
+      ? buildHeritageView(event, {
+          partnerOne,
+          partnerTwo,
+          second: heritageSecondLocale(readerLocale, locales),
+          rsvpUpdatedAt: rsvp?.updatedAt ?? null,
+        })
+      : null,
   };
 }

@@ -18,6 +18,10 @@
   --color-inv-inverse-bg: var(--inv-inverse-bg);
   --color-inv-inverse-text: var(--inv-inverse-text);
 
+  /* Armenian Heritage extras — values come from src/lib/themes/heritage-palette.ts. */
+  --color-her-red: var(--her-red);
+  --color-her-gold: var(--her-gold);
+
   --font-serif: var(--font-display), var(--font-display-hy), "Times New Roman", serif;
   --font-sans: var(--font-body), var(--font-body-hy), system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -198,6 +202,259 @@
   [data-sections="garden"] .inv-field:focus {
     border-color: var(--inv-accent);
   }
+
+  /* -------------------------------------------------------------------------
+   * Armenian Heritage — Armenian first (Noto Serif Armenian via the display
+   * stack), the second language beneath in Cormorant italic.
+   * ---------------------------------------------------------------------- */
+
+  /* Lining figures: Cormorant's old-style "1" reads as "I" in times like 15:00. */
+  [data-sections="heritage"] {
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Phone-width column on larger screens, set on a vellum backdrop. */
+  @media (min-width: 40rem) {
+    .inv-root[data-sections="heritage"] {
+      background: var(--inv-surface);
+    }
+  }
+
+  .her-names,
+  .her-title,
+  .her-signature,
+  .her-numerals,
+  .her-initial {
+    font-family: var(--inv-font-display);
+  }
+
+  .her-names {
+    font-size: 2.625rem;
+    font-weight: 300;
+    line-height: 1.12;
+    color: var(--her-red);
+    text-wrap: balance;
+  }
+
+  .her-title {
+    font-size: 1.625rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--her-red);
+    text-wrap: balance;
+  }
+
+  .her-signature {
+    font-size: 1.75rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--her-red);
+  }
+
+  .her-numerals {
+    font-size: 0.9375rem;
+    letter-spacing: 0.3em;
+    color: var(--inv-accent);
+  }
+
+  .her-body {
+    font-size: 1.0625rem;
+    line-height: 1.875rem;
+  }
+
+  /* Second-language line: one step smaller, italic, secondary colour. */
+  .her-tr {
+    font-family: var(--font-display), "Times New Roman", serif;
+    font-style: italic;
+    color: var(--inv-muted);
+  }
+
+  .her-body-tr {
+    font-size: 1rem;
+    line-height: 1.625rem;
+    white-space: pre-line;
+  }
+
+  .her-label {
+    font-family: var(--font-display), var(--font-display-hy), serif;
+    font-size: 0.6875rem;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--inv-accent);
+  }
+
+  /* Noto Serif Armenian ships 300–500: Armenian labels use 500, not a faux bold. */
+  .her-label-hy {
+    font-weight: 500;
+    letter-spacing: 0.2em;
+  }
+
+  .her-sep {
+    color: var(--inv-accent);
+  }
+
+  .her-wordmark {
+    font-family: var(--font-display), serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.5em;
+    padding-left: 0.5em;
+    color: var(--inv-muted);
+  }
+
+  /* Illuminated initial: pomegranate square, parchment letter, gold border and outer outline. */
+  .her-initial {
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: 0.4rem 0.9rem 0.25rem 0.25rem;
+    border: 1px solid var(--her-gold);
+    outline: 1px solid var(--her-gold);
+    outline-offset: 3px;
+    background: var(--her-red);
+    color: var(--inv-bg);
+    font-size: 2.125rem;
+    line-height: 1;
+  }
+
+  .her-button,
+  .her-button-outline {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 3rem;
+    padding: 0.625rem 1.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    transition: background-color 0.4s var(--ease-editorial), color 0.4s var(--ease-editorial);
+  }
+
+  .her-button {
+    background: var(--her-red);
+    color: var(--her-on-red);
+  }
+
+  .her-button:hover:not(:disabled) {
+    background: var(--her-red-hover);
+  }
+
+  .her-button-outline {
+    border: 1px solid var(--her-red);
+    color: var(--her-red);
+  }
+
+  .her-button-outline:hover:not(:disabled) {
+    background: var(--her-red);
+    color: var(--her-on-red);
+  }
+
+  .her-button:disabled,
+  .her-button-outline:disabled {
+    opacity: 0.6;
+  }
+
+  .her-button :is(.her-tr, .her-sep),
+  .her-button-outline :is(.her-tr, .her-sep),
+  .her-toggle.is-on :is(.her-tr, .her-sep) {
+    color: inherit;
+  }
+
+  .her-button:focus-visible,
+  .her-button-outline:focus-visible,
+  .her-step:focus-visible,
+  .her-toggle:has(:focus-visible) {
+    outline: 2px solid var(--her-red);
+    outline-offset: 3px;
+  }
+
+  .her-field {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem 0;
+    border: 0;
+    border-bottom: 1px solid var(--her-gold-ui);
+    border-radius: 0;
+    background: transparent;
+    color: var(--inv-text);
+    font-size: 1.0625rem;
+    line-height: 1.75rem;
+    transition: border-color 0.3s var(--ease-editorial), box-shadow 0.3s var(--ease-editorial);
+  }
+
+  .her-field:focus {
+    outline: none;
+    border-bottom-color: var(--her-red);
+    box-shadow: 0 1px 0 0 var(--her-red);
+  }
+
+  .her-field[aria-invalid="true"] {
+    border-bottom-color: var(--her-red);
+  }
+
+  .her-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 4rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--her-gold-ui);
+    text-align: center;
+    transition: background-color 0.4s var(--ease-editorial), color 0.4s var(--ease-editorial), border-color 0.4s var(--ease-editorial);
+  }
+
+  .her-toggle:hover {
+    border-color: var(--her-red);
+  }
+
+  .her-toggle.is-on {
+    border-color: var(--her-red);
+    background: var(--her-red);
+    color: var(--her-on-red);
+  }
+
+  .her-toggle-sm {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 3rem;
+  }
+
+  .her-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--her-gold-ui);
+    color: var(--her-red);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: background-color 0.3s var(--ease-editorial), color 0.3s var(--ease-editorial);
+  }
+
+  .her-step:hover:not(:disabled) {
+    border-color: var(--her-red);
+    background: var(--her-red);
+    color: var(--her-on-red);
+  }
+
+  .her-step:disabled {
+    opacity: 0.35;
+  }
+
+  .her-breathe {
+    animation: her-breathe 5s ease-in-out infinite;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -226,6 +483,11 @@
 @keyframes eq {
   0%, 100% { transform: scaleY(0.3); }
   50% { transform: scaleY(1); }
+}
+
+@keyframes her-breathe {
+  0%, 100% { transform: scale(0.97); opacity: 0.45; }
+  50% { transform: scale(1.03); opacity: 1; }
 }
 
 .reveal {
@@ -282,5 +544,16 @@
     opacity: 1;
     transform: none;
     clip-path: none;
+  }
+
+  /* Heritage: no breathing ring and no transitions at all. */
+  .her-breathe {
+    animation: none;
+  }
+
+  [data-sections="heritage"] *,
+  [data-sections="heritage"] *::before,
+  [data-sections="heritage"] *::after {
+    transition: none !important;
   }
 }

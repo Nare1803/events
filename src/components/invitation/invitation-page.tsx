@@ -4,6 +4,7 @@ import { Countdown } from "./countdown";
 import { DressCode } from "./dress-code";
 import { Final } from "./final";
 import { Gallery } from "./gallery";
+import { HeritagePage } from "./heritage/heritage-page";
 import { Hero } from "./hero";
 import { InvitationShell } from "./invitation-shell";
 import { Locations } from "./locations";
@@ -19,6 +20,16 @@ import { Welcome } from "./welcome";
 export function InvitationPage({ view, after }: { view: InvitationView; after?: ReactNode }) {
   const { settings, t } = view;
   const garden = view.theme.sections === "garden";
+
+  // Armenian Heritage is bilingual and composed from its own sections.
+  if (view.theme.sections === "heritage" && view.heritage) {
+    return (
+      <InvitationShell view={view}>
+        <HeritagePage view={view} after={after} />
+      </InvitationShell>
+    );
+  }
+
   return (
     <InvitationShell view={view}>
       <Hero view={view} />

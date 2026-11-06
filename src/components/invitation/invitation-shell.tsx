@@ -2,12 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { InvitationView } from "@/types/invitation";
+import { HeritageIntro } from "./heritage/intro";
 import { IntroScreen, type IntroPhase } from "./intro-screen";
 import { LanguageSwitcher } from "./language-switcher";
 import { MusicPlayer, type MusicHandle } from "./music-player";
 
 type ShellProps = {
-  view: Pick<InvitationView, "event" | "guest" | "theme" | "t" | "locale" | "locales" | "allowLocaleSwitch" | "music" | "isPreview" | "basePath" | "banner" | "startOpen">;
+  view: Pick<
+    InvitationView,
+    "event" | "guest" | "theme" | "t" | "locale" | "locales" | "allowLocaleSwitch" | "music" | "isPreview" | "basePath" | "banner" | "startOpen" | "heritage"
+  >;
   children: ReactNode;
 };
 
@@ -78,21 +82,28 @@ export function InvitationShell({ view, children }: ShellProps) {
         </p>
       )}
 
-      {view.allowLocaleSwitch && <LanguageSwitcher locales={view.locales} current={view.locale} label={view.t.language.label} />}
+      {view.allowLocaleSwitch && (
+        // Heritage is always Armenian first; its switcher picks the second language.
+        <LanguageSwitcher locales={view.locales} current={view.heritage?.second?.locale ?? view.locale} label={view.t.language.label} />
+      )}
 
-      <IntroScreen
-        phase={phase}
-        variant={view.theme.intro}
-        guestName={view.guest?.name ?? null}
-        partnerOne={view.event.partnerOne}
-        partnerTwo={view.event.partnerTwo}
-        label={view.event.label}
-        inviteLine={view.event.inviteLine}
-        dotDate={view.event.dotDate}
-        dateISO={view.event.dateISO}
-        t={view.t}
-        onOpen={open}
-      />
+      {view.theme.intro === "monogram" && view.heritage ? (
+        <HeritageIntro phase={phase} view={view} onOpen={open} />
+      ) : (
+        <IntroScreen
+          phase={phase}
+          variant={view.theme.intro}
+          guestName={view.guest?.name ?? null}
+          partnerOne={view.event.partnerOne}
+          partnerTwo={view.event.partnerTwo}
+          label={view.event.label}
+          inviteLine={view.event.inviteLine}
+          dotDate={view.event.dotDate}
+          dateISO={view.event.dateISO}
+          t={view.t}
+          onOpen={open}
+        />
+      )}
 
       <main id="invitation-main" tabIndex={-1} inert={phase === "closed"} className="outline-none">{children}</main>
 

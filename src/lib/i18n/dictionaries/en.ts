@@ -120,6 +120,25 @@ export const en = {
   final: {
     madeWith: "Made with {brand}",
   },
+  /** Armenian Heritage template: wording taken from its approved design. */
+  heritage: {
+    dear: "Dear {name},",
+    dearGuests: "Dear guests,",
+    tapToOpen: "Tap the monogram to open",
+    withLove: "With love,",
+    scheduleTitle: "The day",
+    travelTo: "On to {place}",
+    venues: "Venues",
+    map: "Map",
+    dressCode: "Dress code",
+    moments: "moments we hold dear",
+    fullName: "Full name",
+    declining: "Regretfully declining",
+    send: "Send reply",
+    fewerGuests: "One guest fewer",
+    moreGuests: "One guest more",
+    thanks: "Thank you",
+  },
   language: {
     label: "Language",
   },

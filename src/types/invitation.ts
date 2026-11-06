@@ -75,6 +75,53 @@ export type InvitationView = {
   locations: LocationView[];
   dressCode: DressCodeView | null;
   music: MusicView | null;
+  /** Extra data for the Armenian Heritage template; null for every other template. */
+  heritage: HeritageView | null;
+};
+
+/**
+ * Armenian Heritage renders Armenian first (the main view is always resolved in
+ * `hy`) and the guest's second language under each line.
+ */
+export type HeritageView = {
+  /** Date in Armenian letter-numerals, e.g. "ԺԸ · Է · ՍԻԷ". */
+  numeralDate: string;
+  /** Initials from the Armenian names, e.g. ["Ա", "Դ"]; one for single-host events. */
+  initials: string[];
+  /** "Կիրակի, 18 հուլիսի 2027" */
+  fullDate: string;
+  /** "հունիսի 15-ը" — RSVP deadline, or null when there is none. */
+  deadline: string | null;
+  /** Lines in the second language, or null when the invitation is Armenian only. */
+  second: HeritageSecondView | null;
+};
+
+/**
+ * Couple-authored text in the second language. Resolved strictly: a missing
+ * translation is an empty string (the line is simply not shown) rather than a
+ * fallback to Armenian, which would print the same text twice.
+ */
+export type HeritageSecondView = {
+  locale: Locale;
+  t: Dictionary;
+  label: string;
+  partnerOne: string;
+  partnerTwo: string;
+  /** "Sunday, 18 July 2027" */
+  fullDate: string;
+  /** "3 pm" */
+  time: string;
+  /** "15 June" */
+  deadline: string | null;
+  /** When this guest last replied, e.g. "11 September 2026"; null without a reply. */
+  respondedOn: string | null;
+  heroSubtitle: string;
+  welcomeText: string;
+  invitationText: string;
+  closingText: string;
+  schedule: Record<string, { title: string; description: string; locationName: string }>;
+  locations: Record<string, { name: string; description: string }>;
+  dressCode: { title: string; description: string; swatches: string[] } | null;
 };
 
 export type RsvpView = {
@@ -97,6 +144,7 @@ export type ScheduleItemView = {
   title: string;
   description: string;
   icon: string | null;
+  locationId: string | null;
   locationName: string | null;
 };
 

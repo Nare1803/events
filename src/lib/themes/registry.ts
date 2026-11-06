@@ -1,4 +1,5 @@
 import { brand } from "@/config/brand";
+import { HERITAGE } from "./heritage-palette";
 import type { Theme, ThemeOverrides, ThemeStyle } from "./types";
 
 const SERIF = "var(--font-display), var(--font-display-hy), 'Times New Roman', serif";
@@ -84,6 +85,33 @@ const modernGarden: Theme = {
   variants: { hero: "botanical", intro: "bloom", sections: "garden" },
 };
 
+const armenianHeritage: Theme = {
+  id: "armenian-heritage",
+  name: "Armenian Heritage",
+  description: "Ornament inspired by Armenian manuscripts and carpets. Armenian first, with the guest's language beneath.",
+  available: true,
+  tokens: {
+    colors: {
+      background: HERITAGE.parchment,
+      surface: HERITAGE.vellum,
+      text: HERITAGE.ink,
+      muted: HERITAGE.muted,
+      accent: HERITAGE.goldText,
+      line: HERITAGE.line,
+      inverseBackground: HERITAGE.dark.background,
+      inverseText: HERITAGE.dark.text,
+    },
+    // Armenian falls through Cormorant (no Armenian glyphs) to Noto Serif Armenian.
+    fonts: { display: SERIF, body: SERIF },
+    radius: "0px",
+    cardRadius: "0px",
+    borderWidth: "1px",
+    sectionSpacing: "4.5rem",
+    eyebrowTracking: "0.32em",
+  },
+  variants: { hero: "heritage", intro: "monogram", sections: "heritage" },
+};
+
 /** Catalogue entries not yet implemented in code — shown as "coming soon", never selectable. */
 function upcoming(id: string, name: string, description: string): Theme {
   return { ...editorialNude, id, name, description, available: false };
@@ -95,7 +123,7 @@ export const THEMES: Theme[] = [
   upcoming("romantic-film", "Romantic Film", "Grain, light leaks and cinematic stills."),
   modernGarden,
   upcoming("old-money", "Old Money", "Heritage serif, crest monograms and quiet luxury."),
-  upcoming("armenian-heritage", "Armenian Heritage", "Ornament inspired by Armenian manuscripts and carpets."),
+  armenianHeritage,
 ];
 
 export const DEFAULT_THEME_ID = editorialNude.id;

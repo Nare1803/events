@@ -69,6 +69,44 @@ export function formatTime(date: Date, timeZone: string): string {
   return `${pad(p.hour)}:${pad(p.minute)}`;
 }
 
+/** Day, month and year as numbers in the given timezone. */
+export function zonedDay(date: Date, timeZone: string): { day: number; month: number; year: number } {
+  const p = zonedParts(date, timeZone);
+  return { day: p.day, month: p.month, year: p.year };
+}
+
+function namedParts(date: Date, timeZone: string, locale: Locale, options: Intl.DateTimeFormatOptions) {
+  const parts = new Intl.DateTimeFormat(LOCALE_LABELS[locale].intl, { timeZone, ...options }).formatToParts(date);
+  return (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+}
+
+const capitalise = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
+
+/**
+ * Letter-style date with weekday, the same shape in every language:
+ * "Կիրակի, 18 հուլիսի 2027" · "Sunday, 18 July 2027" · "Воскресенье, 18 июля 2027".
+ * (Intl's own Armenian and Russian forms add "թ." / "г." and drop the capital.)
+ */
+export function formatFullDate(date: Date, timeZone: string, locale: Locale): string {
+  const get = namedParts(date, timeZone, locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return `${capitalise(get("weekday"))}, ${get("day")} ${get("month")} ${get("year")}`;
+}
+
+/** Short reply-by date: "հունիսի 15-ը" · "15 June" · "15 июня". */
+export function formatDayMonth(date: Date, timeZone: string, locale: Locale): string {
+  const get = namedParts(date, timeZone, locale, { day: "numeric", month: "long" });
+  return locale === "hy" ? `${get("month")} ${get("day")}-ը` : `${get("day")} ${get("month")}`;
+}
+
+/** Clock time as people say it: "3 pm" / "3:30 pm" in English, "15:00" otherwise. */
+export function formatClock(date: Date, timeZone: string, locale: Locale): string {
+  if (locale !== "en") return formatTime(date, timeZone);
+  const p = zonedParts(date, timeZone);
+  const hour = p.hour % 12 || 12;
+  const suffix = p.hour < 12 ? "am" : "pm";
+  return p.minute ? `${hour}:${pad(p.minute)} ${suffix}` : `${hour} ${suffix}`;
+}
+
 /** Compact date-time for the dashboard, e.g. "18 Jul 2027, 15:00". */
 export function formatDateTime(date: Date | null | undefined, timeZone = "Asia/Yerevan"): string {
   if (!date) return "—";

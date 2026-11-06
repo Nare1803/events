@@ -27,16 +27,26 @@ function split(total: number): Remaining {
   };
 }
 
-export function Countdown({ dateISO, t, garden = false }: { dateISO: string; t: Dictionary["countdown"]; garden?: boolean }) {
+/**
+ * Live time left until `dateISO` (a UTC instant, so the event's timezone is
+ * already applied). `remaining` is null on the server, during hydration and
+ * once the moment has passed; `finished` then says which message to show.
+ */
+export function useCountdown(dateISO: string): { remaining: Remaining | null; finished: "today" | "past" | null } {
   // null on the server and during hydration → stable placeholders, no mismatch.
   const now = useSyncExternalStore(subscribe, getNowSecond, getServerSnapshot);
   const target = Math.floor(new Date(dateISO).getTime() / 1000);
   const diff = now === null ? null : target - now;
-
-  const finished = diff !== null && diff <= 0;
   // Within 24h after the start we celebrate "today"; afterwards we thank guests.
-  const finalMessage = finished ? (diff > -DAY ? t.today : t.past) : null;
-  const remaining = diff !== null && diff > 0 ? split(diff) : null;
+  const finished = diff !== null && diff <= 0 ? (diff > -DAY ? "today" : "past") : null;
+  return { remaining: diff !== null && diff > 0 ? split(diff) : null, finished };
+}
+
+export type { Remaining };
+
+export function Countdown({ dateISO, t, garden = false }: { dateISO: string; t: Dictionary["countdown"]; garden?: boolean }) {
+  const { remaining, finished } = useCountdown(dateISO);
+  const finalMessage = finished ? t[finished] : null;
 
   const units: { key: keyof Remaining; label: string }[] = [
     { key: "days", label: t.days },

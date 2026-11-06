@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils/cn";
 import type { InvitationView, RsvpView } from "@/types/invitation";
 import { CheckIcon } from "./icons";
 
-type RsvpFormProps = {
+export type RsvpFormProps = {
   eventSlug: string;
   locale: Locale;
   guest: InvitationView["guest"];
@@ -70,7 +70,11 @@ function initialValues(guest: RsvpFormProps["guest"], existing: RsvpView | null)
   };
 }
 
-export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: RsvpFormProps) {
+/**
+ * State, validation and submission shared by every RSVP layout (the default
+ * form below and template-specific ones such as Armenian Heritage).
+ */
+export function useRsvpForm({ eventSlug, locale, guest, existing, settings, t }: RsvpFormProps) {
   const formId = useId();
   const [values, setValues] = useState<Values>(() => initialValues(guest, existing));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -203,6 +207,61 @@ export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: Rs
     }
   }
 
+  const rememberedEntry = !guest && remembered ? safeParse(remembered) : null;
+  const fieldId = (name: string) => `${formId}-${name}`;
+  const errorId = (name: string) => `${formId}-${name}-error`;
+  const describedBy = (name: string, hint?: string) =>
+    [errors[name] ? errorId(name) : null, hint].filter(Boolean).join(" ") || undefined;
+
+  return {
+    formId,
+    values,
+    set,
+    errors,
+    formError,
+    submitting,
+    editing,
+    setEditing,
+    confirmation,
+    copied,
+    copy,
+    confirmationRef,
+    justSubmitted,
+    rememberedEntry,
+    maxGuests,
+    attending,
+    onSubmit,
+    fieldId,
+    errorId,
+    describedBy,
+  };
+}
+
+export function RsvpForm(props: RsvpFormProps) {
+  const { guest, existing, settings, t } = props;
+  const {
+    formId,
+    values,
+    set,
+    errors,
+    formError,
+    submitting,
+    editing,
+    setEditing,
+    confirmation,
+    copied,
+    copy,
+    confirmationRef,
+    justSubmitted,
+    rememberedEntry,
+    maxGuests,
+    attending,
+    onSubmit,
+    fieldId,
+    errorId,
+    describedBy,
+  } = useRsvpForm(props);
+
   // --- Non-form states --------------------------------------------------
   if (confirmation && !editing) {
     const firstName = confirmation.name.split(" ")[0];
@@ -252,14 +311,7 @@ export function RsvpForm({ eventSlug, locale, guest, existing, settings, t }: Rs
     return <p className="mx-auto max-w-lg text-center leading-8 text-inv-muted">{t.personalOnly}</p>;
   }
 
-  const rememberedEntry = !guest && remembered ? safeParse(remembered) : null;
-
   // --- Form -------------------------------------------------------------
-  const fieldId = (name: string) => `${formId}-${name}`;
-  const errorId = (name: string) => `${formId}-${name}-error`;
-  const describedBy = (name: string, hint?: string) =>
-    [errors[name] ? errorId(name) : null, hint].filter(Boolean).join(" ") || undefined;
-
   return (
     <form onSubmit={onSubmit} noValidate className="mx-auto max-w-xl" aria-busy={submitting}>
       {rememberedEntry?.url && (

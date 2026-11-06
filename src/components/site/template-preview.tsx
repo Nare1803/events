@@ -1,5 +1,6 @@
-import type { ThemeTokens } from "@/lib/themes";
+import { HERITAGE, type ThemeTokens } from "@/lib/themes";
 import { Sprig } from "@/components/invitation/botanical";
+import { Divider, Rosette } from "@/components/invitation/heritage/ornaments";
 import { cn } from "@/lib/utils/cn";
 
 type TemplatePreviewProps = {
@@ -18,14 +19,16 @@ type TemplatePreviewProps = {
 export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", className, muted }: TemplatePreviewProps) {
   const c = tokens.colors;
   const [one, two] = name.split(" & ");
-  const light = heroVariant === "framed" || heroVariant === "botanical";
+  const light = heroVariant === "framed" || heroVariant === "botanical" || heroVariant === "heritage";
   return (
     <div
       className={cn("relative aspect-[9/16] w-full overflow-hidden", muted && "grayscale-[60%] opacity-70", className)}
       style={{ background: light ? c.background : c.inverseBackground, color: light ? c.text : c.inverseText }}
       aria-hidden="true"
     >
-      {heroVariant === "botanical" ? (
+      {heroVariant === "heritage" ? (
+        <HeritageMiniature latinNames={name} />
+      ) : heroVariant === "botanical" ? (
         <div className="flex h-full flex-col items-center justify-center gap-[5%] px-[9%] text-center">
           <Sprig className="h-auto w-[45%]" style={{ color: c.accent }} />
           <div className="w-full">
@@ -59,6 +62,45 @@ export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", cl
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Armenian Heritage hero in miniature: the triple manuscript rule, letter-numeral
+ * date, arch photo in its gold/red double outline, Armenian names over the
+ * second-language line, and the star divider.
+ */
+function HeritageMiniature({ latinNames }: { latinNames: string }) {
+  const H = HERITAGE;
+  return (
+    <div className="relative flex h-full flex-col items-center justify-center gap-[3.2%] px-[15%] text-center">
+      <span className="absolute inset-[2.6%] border" style={{ borderColor: H.ink, opacity: 0.7 }} />
+      <span className="absolute inset-[4.4%] border-[1.5px]" style={{ borderColor: H.gold }} />
+      <span className="absolute inset-[6%] border" style={{ borderColor: H.pomegranate }} />
+      <Rosette size={10} color={H.pomegranate} className="absolute left-[4.4%] top-[4.4%] -translate-x-1/2 -translate-y-1/2" />
+      <Rosette size={10} color={H.pomegranate} className="absolute right-[4.4%] top-[4.4%] -translate-y-1/2 translate-x-1/2" />
+      <Rosette size={10} color={H.pomegranate} className="absolute bottom-[4.4%] left-[4.4%] -translate-x-1/2 translate-y-1/2" />
+      <Rosette size={10} color={H.pomegranate} className="absolute bottom-[4.4%] right-[4.4%] translate-x-1/2 translate-y-1/2" />
+
+      <span className="font-serif text-[0.5em] tracking-[0.3em]" style={{ color: H.goldText }}>
+        ԺԸ · Է · ՍԻԷ
+      </span>
+      <div className="w-[58%] rounded-t-full border p-[3%]" style={{ borderColor: H.gold }}>
+        <div className="rounded-t-full border p-[3%]" style={{ borderColor: H.pomegranate }}>
+          <div className="aspect-[3/4] overflow-hidden rounded-t-full">
+            {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail */}
+            <img src="/demo/hero.webp" alt="" className="h-full w-full object-cover" loading="lazy" />
+          </div>
+        </div>
+      </div>
+      <span className="font-serif text-[1.3em] font-light leading-none" style={{ color: H.pomegranate }}>
+        Աննա և Դավիթ
+      </span>
+      <span className="font-serif text-[0.85em] italic leading-none" style={{ color: H.muted }}>
+        {latinNames}
+      </span>
+      <Divider width={120} className="w-[48%]" />
     </div>
   );
 }

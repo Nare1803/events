@@ -7,7 +7,8 @@ import { Cormorant_Garamond, Manrope, Noto_Sans_Armenian, Noto_Serif_Armenian } 
  */
 export const displayFont = Cormorant_Garamond({
   subsets: ["latin", "cyrillic"],
-  weight: ["300", "400", "500"],
+  // 600 is used by the Armenian Heritage labels.
+  weight: ["300", "400", "500", "600"],
   style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",

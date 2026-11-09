@@ -2,25 +2,45 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { InvitationView } from "@/types/invitation";
+import { cn } from "@/lib/utils/cn";
 import { HeritageIntro } from "./heritage/intro";
 import { IntroScreen, type IntroPhase } from "./intro-screen";
 import { LanguageSwitcher } from "./language-switcher";
 import { MusicPlayer, type MusicHandle } from "./music-player";
+import { OldMoneyControls } from "./old-money/controls";
+import { oldMoneyFontVars } from "./old-money/fonts";
+import { OldMoneyIntro } from "./old-money/intro";
 
 type ShellProps = {
   view: Pick<
     InvitationView,
-    "event" | "guest" | "theme" | "t" | "locale" | "locales" | "allowLocaleSwitch" | "music" | "isPreview" | "basePath" | "banner" | "startOpen" | "heritage"
+    | "event"
+    | "guest"
+    | "theme"
+    | "t"
+    | "locale"
+    | "locales"
+    | "allowLocaleSwitch"
+    | "music"
+    | "isPreview"
+    | "basePath"
+    | "banner"
+    | "startOpen"
+    | "heritage"
+    | "oldMoney"
   >;
   children: ReactNode;
 };
 
 const INTRO_DURATION = 1700;
+/** Old Money's envelope: seal press, flap, card rise and fade all finish within 1.3s. */
+const SEAL_DURATION = 1300;
 
 /** Client wrapper around the server-rendered sections: intro, music, language and open tracking. */
 export function InvitationShell({ view, children }: ShellProps) {
   const [phase, setPhase] = useState<IntroPhase>(view.startOpen ? "open" : "closed");
   const music = useRef<MusicHandle>(null);
+  const seal = view.theme.intro === "seal" && !!view.oldMoney;
 
   // Record a privacy-light "opened" event once per browser session.
   useEffect(() => {
@@ -56,11 +76,18 @@ export function InvitationShell({ view, children }: ShellProps) {
     if (phase !== "closed") return;
     music.current?.start();
     window.scrollTo({ top: 0 });
+    const focusMain = () => document.getElementById("invitation-main")?.focus({ preventScroll: true });
+    // Old Money with reduced motion: no envelope animation, straight to the hero.
+    if (seal && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPhase("open");
+      window.requestAnimationFrame(focusMain);
+      return;
+    }
     setPhase("opening");
     window.setTimeout(() => {
       setPhase("open");
-      document.getElementById("invitation-main")?.focus({ preventScroll: true });
-    }, INTRO_DURATION);
+      focusMain();
+    }, seal ? SEAL_DURATION : INTRO_DURATION);
   };
 
   return (
@@ -70,7 +97,8 @@ export function InvitationShell({ view, children }: ShellProps) {
       data-theme={view.theme.id}
       data-sections={view.theme.sections}
       data-opened={phase !== "closed"}
-      className="inv-root group/inv min-h-dvh"
+      // Old Money's fonts are scoped to its invitations; its theme tokens refer to these variables.
+      className={cn("inv-root group/inv min-h-dvh", seal && oldMoneyFontVars)}
     >
       <noscript>
         <style>{`[role="dialog"]{display:none!important}.reveal,.reveal-image,.reveal-image>*{opacity:1!important;transform:none!important;clip-path:none!important}[data-opened] .opacity-0{opacity:1!important}`}</style>
@@ -82,12 +110,27 @@ export function InvitationShell({ view, children }: ShellProps) {
         </p>
       )}
 
-      {view.allowLocaleSwitch && (
-        // Heritage is always Armenian first; its switcher picks the second language.
-        <LanguageSwitcher locales={view.locales} current={view.heritage?.second?.locale ?? view.locale} label={view.t.language.label} />
+      {seal ? (
+        <OldMoneyControls
+          locales={view.locales}
+          current={view.locale}
+          allowSwitch={view.allowLocaleSwitch}
+          label={view.t.language.label}
+          music={view.music}
+          musicRef={music}
+          musicT={view.t.music}
+          intro={phase !== "open"}
+        />
+      ) : (
+        view.allowLocaleSwitch && (
+          // Heritage is always Armenian first; its switcher picks the second language.
+          <LanguageSwitcher locales={view.locales} current={view.heritage?.second?.locale ?? view.locale} label={view.t.language.label} />
+        )
       )}
 
-      {view.theme.intro === "monogram" && view.heritage ? (
+      {seal ? (
+        <OldMoneyIntro phase={phase} view={view} onOpen={open} />
+      ) : view.theme.intro === "monogram" && view.heritage ? (
         <HeritageIntro phase={phase} view={view} onOpen={open} />
       ) : (
         <IntroScreen
@@ -107,7 +150,7 @@ export function InvitationShell({ view, children }: ShellProps) {
 
       <main id="invitation-main" tabIndex={-1} inert={phase === "closed"} className="outline-none">{children}</main>
 
-      {view.music && <MusicPlayer ref={music} music={view.music} visible={phase === "open"} t={view.t.music} />}
+      {view.music && !seal && <MusicPlayer ref={music} music={view.music} visible={phase === "open"} t={view.t.music} />}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import type { InvitationView } from "@/types/invitation";
 import { parseSwatches } from "./dress-code";
 import { buildHeritageView, heritageSecondLocale } from "./heritage";
 import { monogram } from "./monogram";
+import { buildOldMoneyView } from "./old-money";
 
 /**
  * guest          — the real invitation a guest opens (drafts only visible to staff)
@@ -243,5 +244,9 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
           rsvpUpdatedAt: rsvp?.updatedAt ?? null,
         })
       : null,
+    oldMoney:
+      theme.variants.sections === "old-money"
+        ? buildOldMoneyView(event, { partnerOne, partnerTwo, locale, rsvpOpen, now })
+        : null,
   };
 }

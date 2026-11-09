@@ -139,6 +139,22 @@ export const en = {
     moreGuests: "One guest more",
     thanks: "Thank you",
   },
+  /** Old Money template: wording taken from its approved design. */
+  oldMoney: {
+    tapSeal: "Tap the seal to open",
+    togetherWithFamilies: "Together with their families",
+    requestPleasure: "request the pleasure of your company",
+    /** One-host events (a birthday, a baptism). */
+    requestPleasureOne: "requests the pleasure of your company",
+    replyBy: "The favour of a reply is requested by {date}",
+    accepts: "accepts with pleasure",
+    declines: "declines with regret",
+    closedTitle: "RSVP is closed",
+    closedOn: "Replies closed on {date}",
+    gallery: "Gallery",
+    companionsPlaceholder: "Who is coming with you",
+    dietaryPlaceholder: "Allergies or restrictions",
+  },
   language: {
     label: "Language",
   },

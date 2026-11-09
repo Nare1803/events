@@ -92,6 +92,12 @@ export function formatFullDate(date: Date, timeZone: string, locale: Locale): st
   return `${capitalise(get("weekday"))}, ${get("day")} ${get("month")} ${get("year")}`;
 }
 
+/** Day, month and year without Intl's "թ." / "г." suffixes: "15 հունիսի 2027" · "15 June 2027" · "15 июня 2027". */
+export function formatPlainDate(date: Date, timeZone: string, locale: Locale): string {
+  const get = namedParts(date, timeZone, locale, { day: "numeric", month: "long", year: "numeric" });
+  return `${get("day")} ${get("month")} ${get("year")}`;
+}
+
 /** Short reply-by date: "հունիսի 15-ը" · "15 June" · "15 июня". */
 export function formatDayMonth(date: Date, timeZone: string, locale: Locale): string {
   const get = namedParts(date, timeZone, locale, { day: "numeric", month: "long" });

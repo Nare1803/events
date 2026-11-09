@@ -1,5 +1,6 @@
 import { brand } from "@/config/brand";
 import { HERITAGE } from "./heritage-palette";
+import { OLD_MONEY } from "./old-money-palette";
 import type { Theme, ThemeOverrides, ThemeStyle } from "./types";
 
 const SERIF = "var(--font-display), var(--font-display-hy), 'Times New Roman', serif";
@@ -112,6 +113,36 @@ const armenianHeritage: Theme = {
   variants: { hero: "heritage", intro: "monogram", sections: "heritage" },
 };
 
+/** Playfair Display + EB Garamond are loaded by the Old Money components only (see old-money/fonts.ts). */
+const OM_DISPLAY = "var(--font-om-display), var(--font-display-hy), 'Times New Roman', serif";
+const OM_TEXT = "var(--font-om-text), var(--font-display-hy), 'Times New Roman', serif";
+
+const oldMoney: Theme = {
+  id: "old-money",
+  name: "Old Money",
+  description: "Heritage serif, crest monograms and quiet luxury.",
+  available: true,
+  tokens: {
+    colors: {
+      background: OLD_MONEY.paper,
+      surface: OLD_MONEY.cotton,
+      text: OLD_MONEY.navy,
+      muted: OLD_MONEY.muted,
+      accent: OLD_MONEY.goldInk,
+      line: OLD_MONEY.gold,
+      inverseBackground: OLD_MONEY.night,
+      inverseText: OLD_MONEY.paper,
+    },
+    fonts: { display: OM_DISPLAY, body: OM_TEXT },
+    radius: "0px",
+    cardRadius: "0px",
+    borderWidth: "1px",
+    sectionSpacing: "6rem",
+    eyebrowTracking: "0.22em",
+  },
+  variants: { hero: "crest", intro: "seal", sections: "old-money" },
+};
+
 /** Catalogue entries not yet implemented in code — shown as "coming soon", never selectable. */
 function upcoming(id: string, name: string, description: string): Theme {
   return { ...editorialNude, id, name, description, available: false };
@@ -122,7 +153,7 @@ export const THEMES: Theme[] = [
   blackIvory,
   upcoming("romantic-film", "Romantic Film", "Grain, light leaks and cinematic stills."),
   modernGarden,
-  upcoming("old-money", "Old Money", "Heritage serif, crest monograms and quiet luxury."),
+  oldMoney,
   armenianHeritage,
 ];
 

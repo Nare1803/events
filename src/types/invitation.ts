@@ -77,6 +77,22 @@ export type InvitationView = {
   music: MusicView | null;
   /** Extra data for the Armenian Heritage template; null for every other template. */
   heritage: HeritageView | null;
+  /** Extra data for the Old Money template; null for every other template. */
+  oldMoney: OldMoneyView | null;
+};
+
+/** Old Money: one language per guest, like the classic templates. */
+export type OldMoneyView = {
+  /** ["A", "D"], or ["M"] for a one-host event — from the names in this language. */
+  initials: string[];
+  /** Ribbon date, e.g. "XVIII · VII · MMXXVII". */
+  romanDate: string;
+  /** "Sunday, 18 July 2027" */
+  fullDate: string;
+  /** Reply-by date, e.g. "15 June 2027"; null without a deadline. */
+  deadline: string | null;
+  /** When replies closed (the deadline, or the day itself), shown once RSVP is closed. */
+  closedOn: string | null;
 };
 
 /**

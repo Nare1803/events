@@ -1,6 +1,8 @@
-import { HERITAGE, type ThemeTokens } from "@/lib/themes";
+import { HERITAGE, OLD_MONEY, type ThemeTokens } from "@/lib/themes";
 import { Sprig } from "@/components/invitation/botanical";
 import { Divider, Rosette } from "@/components/invitation/heritage/ornaments";
+import { oldMoneyFontVars } from "@/components/invitation/old-money/fonts";
+import { CrestMonogram, EngravedBorder } from "@/components/invitation/old-money/ornaments";
 import { cn } from "@/lib/utils/cn";
 
 type TemplatePreviewProps = {
@@ -19,7 +21,7 @@ type TemplatePreviewProps = {
 export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", className, muted }: TemplatePreviewProps) {
   const c = tokens.colors;
   const [one, two] = name.split(" & ");
-  const light = heroVariant === "framed" || heroVariant === "botanical" || heroVariant === "heritage";
+  const light = heroVariant === "framed" || heroVariant === "botanical" || heroVariant === "heritage" || heroVariant === "crest";
   return (
     <div
       className={cn("relative aspect-[9/16] w-full overflow-hidden", muted && "grayscale-[60%] opacity-70", className)}
@@ -28,6 +30,8 @@ export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", cl
     >
       {heroVariant === "heritage" ? (
         <HeritageMiniature latinNames={name} />
+      ) : heroVariant === "crest" ? (
+        <OldMoneyMiniature one={one} two={two} />
       ) : heroVariant === "botanical" ? (
         <div className="flex h-full flex-col items-center justify-center gap-[5%] px-[9%] text-center">
           <Sprig className="h-auto w-[45%]" style={{ color: c.accent }} />
@@ -101,6 +105,46 @@ function HeritageMiniature({ latinNames }: { latinNames: string }) {
         {latinNames}
       </span>
       <Divider width={120} className="w-[48%]" />
+    </div>
+  );
+}
+
+/**
+ * Old Money hero in miniature (the approved 9:16 thumbnail): engraved border,
+ * crest, framed photo, names with the green italic ampersand, date, subtitle.
+ */
+function OldMoneyMiniature({ one, two }: { one: string; two?: string }) {
+  const C = OLD_MONEY;
+  const display = { fontFamily: "var(--font-om-display), serif" };
+  const text = { fontFamily: "var(--font-om-text), serif" };
+  return (
+    <div className={cn(oldMoneyFontVars, "relative flex h-full flex-col items-center justify-center gap-[3.5%] px-[14%] text-center")} style={{ color: C.navy }}>
+      <EngravedBorder className="absolute inset-0" />
+      <CrestMonogram initials={[one.charAt(0), (two ?? "").charAt(0)].filter(Boolean)} romanDate="XVIII · VII · MMXXVII" size={64} className="h-auto w-[30%]" />
+      <div className="w-[60%] border p-[3%]" style={{ borderColor: C.gold }}>
+        <div className="aspect-[6/7] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail */}
+          <img src="/demo/hero.webp" alt="" className="h-full w-full object-cover" loading="lazy" />
+        </div>
+      </div>
+      <span className="text-[1.55em] leading-none" style={display}>
+        {one}
+        {two && (
+          <>
+            {" "}
+            <span className="italic" style={{ color: C.green }}>
+              &amp;
+            </span>{" "}
+            {two}
+          </>
+        )}
+      </span>
+      <span className="text-[0.62em] leading-none" style={text}>
+        Sunday, 18 July 2027
+      </span>
+      <span className="text-[0.62em] italic leading-none" style={{ ...display, color: C.muted }}>
+        We found forever.
+      </span>
     </div>
   );
 }

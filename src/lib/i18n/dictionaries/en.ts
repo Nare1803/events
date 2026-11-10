@@ -155,6 +155,33 @@ export const en = {
     companionsPlaceholder: "Who is coming with you",
     dietaryPlaceholder: "Allergies or restrictions",
   },
+  /** Romantic Film template: wording taken from its approved design. */
+  film: {
+    tapToBegin: "Tap to begin",
+    welcome: "Welcome",
+    countdown: "Countdown",
+    programme: "Programme",
+    /** After the start time: "15:00 · Yerevan time". */
+    yerevanTime: "Yerevan time",
+    /** Call-sheet column headings. */
+    time: "Time",
+    eventVenue: "Event · Venue",
+    number: "No.",
+    event: "Event",
+    details: "Details",
+    venue: "Venue",
+    colours: "Colours",
+    /** Ticket stub above the guest name. */
+    admission: "Admission",
+    attend: "I’ll be there",
+    decline: "I can’t make it",
+    companion: "Companion’s name",
+    transport: "Do you need transport?",
+    dietary: "Dietary needs",
+    dietaryPlaceholder: "e.g. vegetarian, allergies",
+    messagePlaceholder: "A few words for {names}",
+    send: "Send reply",
+  },
   language: {
     label: "Language",
   },

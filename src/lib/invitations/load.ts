@@ -10,6 +10,7 @@ import { isStaffRole } from "@/lib/auth/roles";
 import { getCurrentUser } from "@/lib/auth/session";
 import type { InvitationView } from "@/types/invitation";
 import { parseSwatches } from "./dress-code";
+import { buildFilmView } from "./film";
 import { buildHeritageView, heritageSecondLocale } from "./heritage";
 import { monogram } from "./monogram";
 import { buildOldMoneyView } from "./old-money";
@@ -248,5 +249,6 @@ export async function loadInvitation({ eventSlug, guestSlug, lang, mode = "guest
       theme.variants.sections === "old-money"
         ? buildOldMoneyView(event, { partnerOne, partnerTwo, locale, rsvpOpen, now })
         : null,
+    film: theme.variants.sections === "film" ? buildFilmView(event, { partnerOne, partnerTwo, locale, t }) : null,
   };
 }

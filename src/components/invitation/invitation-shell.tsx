@@ -10,6 +10,9 @@ import { MusicPlayer, type MusicHandle } from "./music-player";
 import { OldMoneyControls } from "./old-money/controls";
 import { oldMoneyFontVars } from "./old-money/fonts";
 import { OldMoneyIntro } from "./old-money/intro";
+import { FilmControls } from "./romantic-film/controls";
+import { filmFontVars } from "./romantic-film/fonts";
+import { FilmIntro } from "./romantic-film/intro";
 
 type ShellProps = {
   view: Pick<
@@ -28,6 +31,7 @@ type ShellProps = {
     | "startOpen"
     | "heritage"
     | "oldMoney"
+    | "film"
   >;
   children: ReactNode;
 };
@@ -35,12 +39,16 @@ type ShellProps = {
 const INTRO_DURATION = 1700;
 /** Old Money's envelope: seal press, flap, card rise and fade all finish within 1.3s. */
 const SEAL_DURATION = 1300;
+/** Romantic Film: the leader fades in 300ms (a 150ms cross-fade with reduced motion). */
+const LEADER_DURATION = 300;
+const LEADER_DURATION_REDUCED = 150;
 
 /** Client wrapper around the server-rendered sections: intro, music, language and open tracking. */
 export function InvitationShell({ view, children }: ShellProps) {
   const [phase, setPhase] = useState<IntroPhase>(view.startOpen ? "open" : "closed");
   const music = useRef<MusicHandle>(null);
   const seal = view.theme.intro === "seal" && !!view.oldMoney;
+  const leader = view.theme.intro === "leader" && !!view.film;
 
   // Record a privacy-light "opened" event once per browser session.
   useEffect(() => {
@@ -84,10 +92,12 @@ export function InvitationShell({ view, children }: ShellProps) {
       return;
     }
     setPhase("opening");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = leader ? (reduced ? LEADER_DURATION_REDUCED : LEADER_DURATION) : seal ? SEAL_DURATION : INTRO_DURATION;
     window.setTimeout(() => {
       setPhase("open");
       focusMain();
-    }, seal ? SEAL_DURATION : INTRO_DURATION);
+    }, duration);
   };
 
   return (
@@ -97,8 +107,8 @@ export function InvitationShell({ view, children }: ShellProps) {
       data-theme={view.theme.id}
       data-sections={view.theme.sections}
       data-opened={phase !== "closed"}
-      // Old Money's fonts are scoped to its invitations; its theme tokens refer to these variables.
-      className={cn("inv-root group/inv min-h-dvh", seal && oldMoneyFontVars)}
+      // Old Money's and Romantic Film's fonts are scoped to their invitations; their theme tokens refer to these variables.
+      className={cn("inv-root group/inv min-h-dvh", seal && oldMoneyFontVars, leader && filmFontVars)}
     >
       <noscript>
         <style>{`[role="dialog"]{display:none!important}.reveal,.reveal-image,.reveal-image>*{opacity:1!important;transform:none!important;clip-path:none!important}[data-opened] .opacity-0{opacity:1!important}`}</style>
@@ -110,7 +120,18 @@ export function InvitationShell({ view, children }: ShellProps) {
         </p>
       )}
 
-      {seal ? (
+      {leader ? (
+        <FilmControls
+          locales={view.locales}
+          current={view.locale}
+          allowSwitch={view.allowLocaleSwitch}
+          label={view.t.language.label}
+          music={view.music}
+          musicRef={music}
+          musicT={view.t.music}
+          intro={phase !== "open"}
+        />
+      ) : seal ? (
         <OldMoneyControls
           locales={view.locales}
           current={view.locale}
@@ -128,7 +149,9 @@ export function InvitationShell({ view, children }: ShellProps) {
         )
       )}
 
-      {seal ? (
+      {leader ? (
+        <FilmIntro phase={phase} view={view} onOpen={open} />
+      ) : seal ? (
         <OldMoneyIntro phase={phase} view={view} onOpen={open} />
       ) : view.theme.intro === "monogram" && view.heritage ? (
         <HeritageIntro phase={phase} view={view} onOpen={open} />
@@ -150,7 +173,7 @@ export function InvitationShell({ view, children }: ShellProps) {
 
       <main id="invitation-main" tabIndex={-1} inert={phase === "closed"} className="outline-none">{children}</main>
 
-      {view.music && !seal && <MusicPlayer ref={music} music={view.music} visible={phase === "open"} t={view.t.music} />}
+      {view.music && !seal && !leader && <MusicPlayer ref={music} music={view.music} visible={phase === "open"} t={view.t.music} />}
     </div>
   );
 }

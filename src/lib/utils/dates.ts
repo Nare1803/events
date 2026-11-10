@@ -104,6 +104,21 @@ export function formatDayMonth(date: Date, timeZone: string, locale: Locale): st
   return locale === "hy" ? `${get("month")} ${get("day")}-ը` : `${get("day")} ${get("month")}`;
 }
 
+/**
+ * A full date as it reads after "by": "2027 թ. հունիսի 15-ը" · "15 June 2027" · "15 июня 2027".
+ * Armenian puts the year first and the day last, with the article.
+ */
+export function formatByDate(date: Date, timeZone: string, locale: Locale): string {
+  if (locale !== "hy") return formatPlainDate(date, timeZone, locale);
+  const get = namedParts(date, timeZone, locale, { day: "numeric", month: "long", year: "numeric" });
+  return `${get("year")} թ. ${get("month")} ${get("day")}-ը`;
+}
+
+/** The zone's name in the reader's language, e.g. "Armenia Standard Time" (Intl's long generic name). */
+export function formatZoneName(date: Date, timeZone: string, locale: Locale): string {
+  return namedParts(date, timeZone, locale, { timeZoneName: "longGeneric" })("timeZoneName");
+}
+
 /** Clock time as people say it: "3 pm" / "3:30 pm" in English, "15:00" otherwise. */
 export function formatClock(date: Date, timeZone: string, locale: Locale): string {
   if (locale !== "en") return formatTime(date, timeZone);

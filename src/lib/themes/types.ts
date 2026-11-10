@@ -1,9 +1,9 @@
 import type { CSSProperties } from "react";
 
-export type HeroVariant = "full-bleed" | "framed" | "botanical" | "heritage" | "crest";
-export type IntroVariant = "veil" | "letter" | "bloom" | "monogram" | "seal";
+export type HeroVariant = "full-bleed" | "framed" | "botanical" | "heritage" | "crest" | "title-card";
+export type IntroVariant = "veil" | "letter" | "bloom" | "monogram" | "seal" | "leader";
 /** Layout family for the sections below the hero (welcome, gallery, schedule…). */
-export type SectionsVariant = "editorial" | "garden" | "heritage" | "old-money";
+export type SectionsVariant = "editorial" | "garden" | "heritage" | "old-money" | "film";
 
 export type ThemeTokens = {
   colors: {

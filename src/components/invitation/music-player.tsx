@@ -12,8 +12,10 @@ type MusicPlayerProps = {
   music: MusicView;
   visible: boolean;
   t: Dictionary["music"];
-  /** "round": a single play/pause button placed by the parent (Old Money). */
+  /** "round": a single play/pause button placed by the parent (Old Money, Romantic Film). */
   appearance?: "default" | "round";
+  /** Fade the volume in over this many ms when the intro starts the music (Romantic Film). */
+  fadeInMs?: number;
   className?: string;
 };
 
@@ -30,7 +32,7 @@ function NoteIcon() {
  * "Open invitation" click, which satisfies browser autoplay policies.
  * Pauses while the tab is hidden and resumes when the guest returns.
  */
-export const MusicPlayer = forwardRef<MusicHandle, MusicPlayerProps>(function MusicPlayer({ music, visible, t, appearance = "default", className }, ref) {
+export const MusicPlayer = forwardRef<MusicHandle, MusicPlayerProps>(function MusicPlayer({ music, visible, t, appearance = "default", fadeInMs = 0, className }, ref) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -40,8 +42,23 @@ export const MusicPlayer = forwardRef<MusicHandle, MusicPlayerProps>(function Mu
     start() {
       const audio = audioRef.current;
       if (!audio) return;
-      audio.volume = music.volume;
-      audio.play().catch(() => setPlaying(false));
+      if (fadeInMs <= 0) {
+        audio.volume = music.volume;
+        audio.play().catch(() => setPlaying(false));
+        return;
+      }
+      // Ramp up from silence. (iOS ignores scripted volume; there it simply plays.)
+      audio.volume = 0;
+      const begin = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min(1, (now - begin) / fadeInMs);
+        audio.volume = music.volume * progress;
+        if (progress < 1 && !audio.paused) window.requestAnimationFrame(step);
+      };
+      audio
+        .play()
+        .then(() => window.requestAnimationFrame(step))
+        .catch(() => setPlaying(false));
     },
   }));
 

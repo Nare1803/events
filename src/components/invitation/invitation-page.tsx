@@ -9,6 +9,7 @@ import { Hero } from "./hero";
 import { InvitationShell } from "./invitation-shell";
 import { Locations } from "./locations";
 import { OldMoneyPage } from "./old-money/old-money-page";
+import { FilmPage } from "./romantic-film/film-page";
 import { RsvpForm } from "./rsvp-form";
 import { Schedule } from "./schedule";
 import { Section } from "./section";
@@ -21,6 +22,14 @@ import { Welcome } from "./welcome";
 export function InvitationPage({ view, after }: { view: InvitationView; after?: ReactNode }) {
   const { settings, t } = view;
   const garden = view.theme.sections === "garden";
+
+  if (view.theme.sections === "film" && view.film) {
+    return (
+      <InvitationShell view={view}>
+        <FilmPage view={view} after={after} />
+      </InvitationShell>
+    );
+  }
 
   if (view.theme.sections === "old-money" && view.oldMoney) {
     return (

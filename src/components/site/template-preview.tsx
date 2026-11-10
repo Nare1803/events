@@ -1,8 +1,9 @@
-import { HERITAGE, OLD_MONEY, type ThemeTokens } from "@/lib/themes";
+import { FILM, HERITAGE, OLD_MONEY, type ThemeTokens } from "@/lib/themes";
 import { Sprig } from "@/components/invitation/botanical";
 import { Divider, Rosette } from "@/components/invitation/heritage/ornaments";
 import { oldMoneyFontVars } from "@/components/invitation/old-money/fonts";
 import { CrestMonogram, EngravedBorder } from "@/components/invitation/old-money/ornaments";
+import { filmFontVars } from "@/components/invitation/romantic-film/fonts";
 import { cn } from "@/lib/utils/cn";
 
 type TemplatePreviewProps = {
@@ -32,6 +33,8 @@ export function TemplatePreview({ tokens, heroVariant, name = "Anna & David", cl
         <HeritageMiniature latinNames={name} />
       ) : heroVariant === "crest" ? (
         <OldMoneyMiniature one={one} two={two} />
+      ) : heroVariant === "title-card" ? (
+        <FilmMiniature one={one} two={two} />
       ) : heroVariant === "botanical" ? (
         <div className="flex h-full flex-col items-center justify-center gap-[5%] px-[9%] text-center">
           <Sprig className="h-auto w-[45%]" style={{ color: c.accent }} />
@@ -145,6 +148,67 @@ function OldMoneyMiniature({ one, two }: { one: string; two?: string }) {
       <span className="text-[0.62em] italic leading-none" style={{ ...display, color: C.muted }}>
         We found forever.
       </span>
+    </div>
+  );
+}
+
+/**
+ * Romantic Film title card in miniature (the approved 9:16 thumbnail at
+ * 360 × 640, scaled with the card): 40px letterbox bars, the cover photo
+ * behind a scrim that reaches 0.86 before the text, names in Forum 46 with the
+ * rose italic ampersand, the amber date, the subtitle, frame box and timecode.
+ * Static grain is left out at this size; a light leak at the top left only.
+ * Sizes are in cqw, so 1cqw = 3.6px on the 360px export.
+ */
+function FilmMiniature({ one, two }: { one: string; two?: string }) {
+  const C = FILM;
+  const display = { fontFamily: "var(--font-rf-display), serif" };
+  const text = { fontFamily: "var(--font-rf-text), serif" };
+  const code = { ...text, fontSize: "3cqw", fontWeight: 600, letterSpacing: "0.12em" };
+  const bar = { height: "11.1cqw", background: C.night };
+  return (
+    <div className={cn(filmFontVars, "relative flex h-full flex-col [container-type:inline-size]")} style={{ background: C.night, color: C.cream }}>
+      <div className="shrink-0" style={bar} />
+      <div className="relative flex-1 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumbnail */}
+        <img src="/demo/hero.webp" alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        <span
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, rgb(23 18 15 / 0) 22%, rgb(23 18 15 / 0.86) 58%, rgb(23 18 15 / 0.92) 100%)" }}
+        />
+        <span
+          className="absolute -left-[50cqw] -top-[50cqw] h-[100cqw] w-[100cqw]"
+          style={{ background: `radial-gradient(closest-side, color-mix(in srgb, ${C.amber} 20%, transparent), transparent)` }}
+        />
+        <div className="absolute inset-x-0 bottom-[5cqw] flex flex-col items-center text-center">
+          <span className="uppercase leading-none" style={{ ...display, fontSize: "12.8cqw", letterSpacing: "0.12em", paddingInlineStart: "0.12em" }}>
+            {one}
+            {two && (
+              <>
+                <span className="block normal-case italic leading-[1.15]" style={{ ...text, fontSize: "8.33cqw", fontWeight: 500, letterSpacing: 0, color: C.rose }}>
+                  &amp;
+                </span>
+                {two}
+              </>
+            )}
+          </span>
+          <span className="mt-[4cqw] uppercase" style={{ ...display, fontSize: "3.33cqw", letterSpacing: "0.24em", paddingInlineStart: "0.24em", color: C.amber }}>
+            Sunday, 18 July 2027
+          </span>
+          <span className="mt-[1.5cqw] italic" style={{ ...text, fontSize: "4.44cqw" }}>
+            We found forever.
+          </span>
+        </div>
+      </div>
+      <div
+        className="flex shrink-0 items-center justify-between px-[4cqw]"
+        style={{ ...bar, borderTop: `1px solid color-mix(in srgb, ${C.amber} 28%, transparent)` }}
+      >
+        <span className="border px-[1.2cqw] leading-[1.35]" style={{ ...code, color: C.amber, borderColor: C.amber }}>
+          02
+        </span>
+        <span style={{ ...code, color: C.dusk }}>00:02:00:00</span>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { brand } from "@/config/brand";
 import { HERITAGE } from "./heritage-palette";
+import { FILM } from "./film-palette";
 import { OLD_MONEY } from "./old-money-palette";
 import type { Theme, ThemeOverrides, ThemeStyle } from "./types";
 
@@ -143,19 +144,40 @@ const oldMoney: Theme = {
   variants: { hero: "crest", intro: "seal", sections: "old-money" },
 };
 
-/** Catalogue entries not yet implemented in code — shown as "coming soon", never selectable. */
-function upcoming(id: string, name: string, description: string): Theme {
-  return { ...editorialNude, id, name, description, available: false };
-}
+/**
+ * Forum + Lora are loaded by the Romantic Film components only (see
+ * romantic-film/fonts.ts). Armenian falls through both to Noto Serif Armenian.
+ */
+const RF_DISPLAY = "var(--font-rf-display), var(--font-rf-hy), var(--font-display-hy), 'Times New Roman', serif";
+const RF_TEXT = "var(--font-rf-text), var(--font-rf-hy), var(--font-display-hy), Georgia, serif";
 
-export const THEMES: Theme[] = [
-  editorialNude,
-  blackIvory,
-  upcoming("romantic-film", "Romantic Film", "Grain, light leaks and cinematic stills."),
-  modernGarden,
-  oldMoney,
-  armenianHeritage,
-];
+const romanticFilm: Theme = {
+  id: "romantic-film",
+  name: "Romantic Film",
+  description: "Grain, light leaks and cinematic stills.",
+  available: true,
+  tokens: {
+    colors: {
+      background: FILM.paper,
+      surface: FILM.ticket,
+      text: FILM.ink,
+      muted: FILM.muted,
+      accent: FILM.amberInk,
+      line: FILM.hairline,
+      inverseBackground: FILM.night,
+      inverseText: FILM.cream,
+    },
+    fonts: { display: RF_DISPLAY, body: RF_TEXT },
+    radius: "2px",
+    cardRadius: "2px",
+    borderWidth: "1px",
+    sectionSpacing: "7rem",
+    eyebrowTracking: "0.24em",
+  },
+  variants: { hero: "title-card", intro: "leader", sections: "film" },
+};
+
+export const THEMES: Theme[] = [editorialNude, blackIvory, romanticFilm, modernGarden, oldMoney, armenianHeritage];
 
 export const DEFAULT_THEME_ID = editorialNude.id;
 

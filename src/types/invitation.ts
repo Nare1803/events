@@ -79,6 +79,20 @@ export type InvitationView = {
   heritage: HeritageView | null;
   /** Extra data for the Old Money template; null for every other template. */
   oldMoney: OldMoneyView | null;
+  /** Extra data for the Romantic Film template; null for every other template. */
+  film: FilmView | null;
+};
+
+/** Romantic Film: one language per guest, like the classic templates. */
+export type FilmView = {
+  /** ["A", "D"], or ["M"] for a one-host event — from the names in this language. */
+  initials: string[];
+  /** "Sunday, 18 July 2027" */
+  fullDate: string;
+  /** Reply-by date as it reads after "Kindly reply by", e.g. "15 June 2027"; null without a deadline. */
+  deadline: string | null;
+  /** "Yerevan time", or the zone's name for an event elsewhere. */
+  zone: string;
 };
 
 /** Old Money: one language per guest, like the classic templates. */

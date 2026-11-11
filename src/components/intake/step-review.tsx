@@ -1,6 +1,7 @@
 "use client";
 
 import { LOCALE_LABELS } from "@/lib/i18n/locales";
+import { formatIsoDay } from "@/lib/utils/dates";
 import { MUSIC_CHOICE_LABELS, RSVP_FIELD_LABELS } from "@/lib/projects/intake";
 import { CONTACT_LABELS, CONTACT_METHODS } from "@/lib/validation/project";
 import { Check, Chip, Field, OptionCard, StepHeading } from "./fields";
@@ -11,7 +12,7 @@ type ReviewProps = StepProps & { templates: TemplateOption[]; packages: PackageO
 function Row({ label, step, goTo, children }: { label: string; step: number; goTo: (n: number) => void; children: React.ReactNode }) {
   return (
     <div className="grid gap-1 py-4 sm:grid-cols-[160px_1fr_auto] sm:gap-6">
-      <dt className="inv-eyebrow text-[0.625rem] text-inv-muted">{label}</dt>
+      <dt className="inv-label">{label}</dt>
       <dd className="text-sm leading-6">{children}</dd>
       <dd>
         <button type="button" onClick={() => goTo(step)} className="inv-link">
@@ -37,7 +38,7 @@ export function StepReview({ state, update, errors, templates, packages, goTo }:
         <Row label="Event" step={0} goTo={goTo}>
           <span className="font-serif text-xl">{[e.partnerOne, e.partnerTwo].filter(Boolean).join(" & ") || "—"}</span>
           <br />
-          {e.date || "Date to be confirmed"} · {[e.locale, ...e.extraLocales].map((l) => LOCALE_LABELS[l].native).join(", ")}
+          {formatIsoDay(e.date) ?? "Date to be confirmed"} · {[e.locale, ...e.extraLocales].map((l) => LOCALE_LABELS[l].native).join(", ")}
         </Row>
         <Row label="Style" step={1} goTo={goTo}>
           {template?.name ?? "—"}
@@ -61,6 +62,7 @@ export function StepReview({ state, update, errors, templates, packages, goTo }:
         </Row>
         <Row label="RSVP" step={7} goTo={goTo}>
           {["attendance", ...state.rsvp.fields.filter((f) => f !== "attendance")].map((f) => RSVP_FIELD_LABELS[f]).join(", ")}
+          {formatIsoDay(state.rsvp.deadline) && <span className="block text-inv-muted">Reply by {formatIsoDay(state.rsvp.deadline)}</span>}
         </Row>
         <Row label="Guests" step={8} goTo={goTo}>
           {state.guests.mode === "upload" && state.guests.rows.length ? `${state.guests.rows.length} guests` : "Sending later"}
@@ -72,7 +74,7 @@ export function StepReview({ state, update, errors, templates, packages, goTo }:
 
       {packages.length > 0 && (
         <fieldset className="mt-14">
-          <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">Your package</legend>
+          <legend className="inv-label">Your package</legend>
           <div className="mt-4 grid gap-3">
             {packages.map((p) => (
               <OptionCard
@@ -85,12 +87,12 @@ export function StepReview({ state, update, errors, templates, packages, goTo }:
               />
             ))}
           </div>
-          <p className="mt-2 text-xs text-inv-muted">We&apos;ll confirm the details and price with you personally before we begin.</p>
+          <p className="mt-2 text-[0.8125rem] text-inv-muted">We&apos;ll confirm the details and price with you personally before we begin.</p>
         </fieldset>
       )}
 
       <fieldset className="mt-14">
-        <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">How can we reach you?</legend>
+        <legend className="inv-label">How can we reach you?</legend>
         <div className="mt-6 grid gap-8 sm:grid-cols-2">
           <Field label="Your name" value={state.contact.name} onChange={(v) => setContact({ name: v })} error={errors["contact.name"]} autoComplete="name" maxLength={120} className="sm:col-span-2" />
           <Field label="Phone / WhatsApp" type="tel" inputMode="tel" value={state.contact.phone} onChange={(v) => setContact({ phone: v })} error={errors["contact.phone"]} autoComplete="tel" maxLength={32} />

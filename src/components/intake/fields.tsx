@@ -2,6 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
+import { formatIsoDay } from "@/lib/utils/dates";
 
 /* Editorial form controls for the customer order form (styled by the invitation tokens). */
 
@@ -23,6 +24,8 @@ type FieldProps = {
   onChange: (value: string) => void;
   error?: string;
   hint?: string;
+  /** Date fields: the help line once a day is chosen, given the day in words ("Sunday, 18 July 2027"). */
+  dateHint?: (words: string) => string;
   optional?: boolean;
   type?: string;
   multiline?: boolean;
@@ -34,8 +37,11 @@ type FieldProps = {
   className?: string;
 };
 
-export function Field({ label, value, onChange, error, hint, optional, type = "text", multiline, rows = 4, maxLength = 200, placeholder, autoComplete, inputMode, className }: FieldProps) {
+export function Field({ label, value, onChange, error, hint: plainHint, dateHint, optional, type = "text", multiline, rows = 4, maxLength = 200, placeholder, autoComplete, inputMode, className }: FieldProps) {
   const id = useId();
+  // Browsers show date inputs in their own format (often mm/dd/yyyy), so the chosen day is repeated in words.
+  const words = type === "date" ? formatIsoDay(value) : null;
+  const hint = words ? (dateHint ? dateHint(words) : words) : plainHint;
   const describedBy = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean).join(" ") || undefined;
   const common = {
     id,
@@ -49,9 +55,9 @@ export function Field({ label, value, onChange, error, hint, optional, type = "t
   };
   return (
     <div className={className}>
-      <label htmlFor={id} className="inv-eyebrow flex items-baseline justify-between gap-3 text-[0.625rem] text-inv-muted">
+      <label htmlFor={id} className="inv-label mb-2 flex items-baseline justify-between gap-3">
         <span>{label}</span>
-        {optional && <span className="normal-case tracking-normal opacity-70">Optional</span>}
+        {optional && <span className="font-normal normal-case tracking-normal">Optional</span>}
       </label>
       {multiline ? (
         <textarea {...common} rows={rows} className="inv-field min-h-28 resize-y leading-7" />
@@ -59,12 +65,12 @@ export function Field({ label, value, onChange, error, hint, optional, type = "t
         <input {...common} type={type} inputMode={inputMode} className="inv-field" />
       )}
       {hint && !error && (
-        <p id={`${id}-hint`} className="mt-2 text-xs text-inv-muted">
+        <p id={`${id}-hint`} className={cn("mt-2 text-[0.8125rem] leading-5", words ? "text-inv-text" : "text-inv-muted")} aria-live={type === "date" ? "polite" : undefined}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} role="alert" className="mt-2 text-xs text-inv-accent">
+        <p id={`${id}-error`} role="alert" className="mt-2 text-[0.8125rem] leading-5 text-inv-accent">
           {error}
         </p>
       )}
@@ -82,7 +88,7 @@ export function Chip({ selected, onClick, children, disabled }: { selected: bool
       onClick={onClick}
       className={cn(
         "min-h-11 rounded-full border px-5 text-sm transition-colors duration-300",
-        selected ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
+        selected ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-control hover:border-inv-text",
         disabled && "opacity-40",
       )}
     >
@@ -109,7 +115,7 @@ export function OptionCard({
     <label
       className={cn(
         "flex cursor-pointer items-start gap-4 border px-5 py-4 transition-colors duration-300 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2",
-        checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
+        checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-control hover:border-inv-text",
       )}
     >
       <input type="radio" name={name} checked={checked} onChange={onSelect} className="sr-only" />
@@ -140,7 +146,7 @@ export function Check({ checked, onChange, children, error }: { checked: boolean
         <span>{children}</span>
       </label>
       {error && (
-        <p role="alert" className="mt-1 pl-7 text-xs text-inv-accent">
+        <p role="alert" className="mt-1 pl-7 text-[0.8125rem] text-inv-accent">
           {error}
         </p>
       )}

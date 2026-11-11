@@ -41,5 +41,15 @@ export const PIPELINE_GROUPS: { key: string; label: string; statuses: ProjectSta
   { key: "published", label: "Published", statuses: ["PUBLISHED"] },
 ];
 
+/**
+ * Stages the studio may pick by hand. A live or archived project never appears
+ * here: it has its own buttons (take offline, archive, restore), so a stray
+ * "Update" can't move a live invitation back to the start.
+ */
+export function manualStatusTargets(current: ProjectStatus): ProjectStatus[] {
+  if (current === "PUBLISHED" || current === "ARCHIVED") return [];
+  return PROJECT_STATUSES.filter((s) => s !== current && s !== "PUBLISHED" && s !== "ARCHIVED");
+}
+
 /** Statuses in which the customer may see the preview on their private link. */
 export const REVIEWABLE: ProjectStatus[] = ["READY_FOR_REVIEW", "CHANGES_REQUESTED", "APPROVED"];

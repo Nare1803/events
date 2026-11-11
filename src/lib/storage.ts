@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { UPLOAD_MAX_MB } from "@/lib/validation/intake";
 
 /**
  * Local-disk storage driver. Files live in ./storage/uploads (outside /public,
@@ -15,8 +16,8 @@ import sharp from "sharp";
 export const UPLOAD_ROOT = path.join(process.cwd(), "storage", "uploads");
 export const UPLOAD_URL_PREFIX = "/uploads/";
 
-const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
-const MAX_AUDIO_BYTES = 12 * 1024 * 1024;
+const MAX_IMAGE_BYTES = UPLOAD_MAX_MB * 1024 * 1024;
+const MAX_AUDIO_BYTES = UPLOAD_MAX_MB * 1024 * 1024;
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif", "image/heic", "image/heif"]);
 const AUDIO_TYPES: Record<string, string> = {
   "audio/mpeg": "mp3",
@@ -55,7 +56,7 @@ export function isUploadFile(value: FormDataEntryValue | null): value is File {
  * re-encodes to WebP and strips all metadata (EXIF GPS location included).
  */
 export async function storeImage(folder: string, file: File, maxEdge = 2400): Promise<StoredImage> {
-  if (file.size > MAX_IMAGE_BYTES) throw new UploadError("Images must be 12 MB or smaller.");
+  if (file.size > MAX_IMAGE_BYTES) throw new UploadError(`Images must be ${UPLOAD_MAX_MB} MB or smaller.`);
   if (file.type && !IMAGE_TYPES.has(file.type)) throw new UploadError("Please upload a JPEG, PNG, WebP or AVIF image.");
   const input = Buffer.from(await file.arrayBuffer());
   const { data, info } = await sharp(input, { failOn: "error" })
@@ -72,7 +73,7 @@ export async function storeImage(folder: string, file: File, maxEdge = 2400): Pr
 }
 
 export async function storeAudio(folder: string, file: File): Promise<string> {
-  if (file.size > MAX_AUDIO_BYTES) throw new UploadError("Audio files must be 12 MB or smaller.");
+  if (file.size > MAX_AUDIO_BYTES) throw new UploadError(`Audio files must be ${UPLOAD_MAX_MB} MB or smaller.`);
   const ext = AUDIO_TYPES[file.type];
   if (!ext) throw new UploadError("Please upload an MP3, M4A, AAC, OGG or WAV file.");
   return save(folder, fileName(ext), Buffer.from(await file.arrayBuffer()));

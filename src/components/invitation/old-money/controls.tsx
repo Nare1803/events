@@ -23,7 +23,7 @@ type Props = {
 };
 
 /**
- * HY · EN · RU pill and a 44px round music button, fixed 26px from the top
+ * Հայ · Eng · Рус pill and a 44px round music button, fixed 26px from the top
  * right. Dark over the night intro and the closing screen, light elsewhere.
  */
 export function OldMoneyControls({ locales, current, allowSwitch, label, music, musicRef, musicT, intro }: Props) {
@@ -50,12 +50,12 @@ export function OldMoneyControls({ locales, current, allowSwitch, label, music, 
 
   return (
     <div
-      className={cn("om-controls fixed right-[26px] top-[max(26px,env(safe-area-inset-top))] z-[60] flex items-center gap-2", dark && "is-dark")}
+      className={cn("om-controls fixed right-[26px] top-[calc(max(26px,env(safe-area-inset-top))+var(--inv-banner-h,0px))] z-[60] flex items-center gap-2", dark && "is-dark")}
       style={oldMoneyStyle(dark ? "dark" : "light")}
     >
       {allowSwitch && (
         <nav aria-label={label} className="om-pill">
-          {/* Always HY · EN · RU, whatever order the couple enabled them in. */}
+          {/* Always Հայ · Eng · Рус, whatever order the couple enabled them in. */}
           {LOCALES.filter((l) => locales.includes(l)).map((locale) => (
             <Link
               key={locale}
@@ -68,12 +68,12 @@ export function OldMoneyControls({ locales, current, allowSwitch, label, music, 
               aria-current={locale === current ? "true" : undefined}
               className={cn("om-pill-item", locale === current && "is-on")}
             >
-              {locale.toUpperCase()}
+              {LOCALE_LABELS[locale].tag}
             </Link>
           ))}
         </nav>
       )}
-      {music && <MusicPlayer ref={musicRef} music={music} visible t={musicT} appearance="round" className="om-round" />}
+      {music && <MusicPlayer ref={musicRef} music={music} t={musicT} className="om-round" />}
     </div>
   );
 }

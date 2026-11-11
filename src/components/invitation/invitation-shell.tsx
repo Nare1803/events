@@ -5,8 +5,8 @@ import type { InvitationView } from "@/types/invitation";
 import { cn } from "@/lib/utils/cn";
 import { HeritageIntro } from "./heritage/intro";
 import { IntroScreen, type IntroPhase } from "./intro-screen";
-import { LanguageSwitcher } from "./language-switcher";
-import { MusicPlayer, type MusicHandle } from "./music-player";
+import { InvitationControls } from "./invitation-controls";
+import type { MusicHandle } from "./music-player";
 import { OldMoneyControls } from "./old-money/controls";
 import { oldMoneyFontVars } from "./old-money/fonts";
 import { OldMoneyIntro } from "./old-money/intro";
@@ -42,6 +42,9 @@ const SEAL_DURATION = 1300;
 /** Romantic Film: the leader fades in 300ms (a 150ms cross-fade with reduced motion). */
 const LEADER_DURATION = 300;
 const LEADER_DURATION_REDUCED = 150;
+
+/** Height of the studio / review banner; the floating controls sit below it. */
+const BANNER_HEIGHT = "1.75rem";
 
 /** Client wrapper around the server-rendered sections: intro, music, language and open tracking. */
 export function InvitationShell({ view, children }: ShellProps) {
@@ -103,7 +106,7 @@ export function InvitationShell({ view, children }: ShellProps) {
   return (
     <div
       lang={view.locale}
-      style={view.theme.style}
+      style={view.banner ? { ...view.theme.style, "--inv-banner-h": BANNER_HEIGHT } : view.theme.style}
       data-theme={view.theme.id}
       data-sections={view.theme.sections}
       data-opened={phase !== "closed"}
@@ -115,7 +118,7 @@ export function InvitationShell({ view, children }: ShellProps) {
       </noscript>
 
       {view.banner && (
-        <p className="fixed inset-x-0 top-0 z-[70] bg-espresso py-1.5 text-center text-[0.625rem] font-medium uppercase tracking-[0.2em] text-ivory">
+        <p className="fixed inset-x-0 top-0 z-[70] h-7 truncate bg-espresso px-4 text-center text-[0.6875rem] font-medium uppercase leading-7 tracking-[0.2em] text-ivory">
           {view.banner}
         </p>
       )}
@@ -143,10 +146,16 @@ export function InvitationShell({ view, children }: ShellProps) {
           intro={phase !== "open"}
         />
       ) : (
-        view.allowLocaleSwitch && (
+        <InvitationControls
+          locales={view.locales}
           // Heritage is always Armenian first; its switcher picks the second language.
-          <LanguageSwitcher locales={view.locales} current={view.heritage?.second?.locale ?? view.locale} label={view.t.language.label} />
-        )
+          current={view.heritage?.second?.locale ?? view.locale}
+          allowSwitch={view.allowLocaleSwitch}
+          label={view.t.language.label}
+          music={view.music}
+          musicRef={music}
+          musicT={view.t.music}
+        />
       )}
 
       {leader ? (
@@ -173,7 +182,6 @@ export function InvitationShell({ view, children }: ShellProps) {
 
       <main id="invitation-main" tabIndex={-1} inert={phase === "closed"} className="outline-none">{children}</main>
 
-      {view.music && !seal && !leader && <MusicPlayer ref={music} music={view.music} visible={phase === "open"} t={view.t.music} />}
     </div>
   );
 }

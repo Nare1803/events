@@ -5,7 +5,7 @@ import { requireStaff } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { PIPELINE_GROUPS } from "@/lib/projects/status";
 import { cn } from "@/lib/utils/cn";
-import { formatDateTime } from "@/lib/utils/dates";
+import { formatDateTime, formatDaysAway } from "@/lib/utils/dates";
 import { eventTitle } from "@/server/queries/events";
 
 const EVENT_TYPE_LABEL: Record<string, string> = { WEDDING: "Wedding", ENGAGEMENT: "Engagement", BIRTHDAY: "Birthday", BAPTISM: "Baptism", OTHER: "Celebration" };
@@ -106,53 +106,110 @@ export default async function StudioHomePage({ searchParams }: { searchParams: P
 
       <div className="mt-4">
         {projects.length === 0 ? (
-          <EmptyState title="No projects here" description="New requests from the order form appear here automatically." />
+          <EmptyState
+            title={query ? `Nothing matches “${query}”` : view === "archived" ? "No archived projects" : group ? `No projects in “${group.label}”` : "No projects yet"}
+            description={
+              query
+                ? "Search looks at the reference, the customer's name and email, and the invitation address. Try fewer letters."
+                : group
+                  ? "Projects move here when they reach this stage."
+                  : "Requests from the order form on the website appear here automatically. You can also start one yourself."
+            }
+            action={
+              query || view ? (
+                <Link href="/admin" className={buttonClass("secondary")}>
+                  Show all projects
+                </Link>
+              ) : (
+                <Link href="/admin/projects/new" className={buttonClass("primary")}>
+                  New project
+                </Link>
+              )
+            }
+          />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-            <table className="w-full min-w-[900px] text-left text-sm">
-              <thead className="border-b border-stone-200 bg-stone-50 text-xs uppercase tracking-wide text-stone-500">
-                <tr>
-                  {["Celebration", "Customer", "Date", "Template", "Status", "Assigned", "Updated"].map((h) => (
-                    <th key={h} scope="col" className="px-4 py-3 font-medium">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {projects.map((p) => (
-                  <tr key={p.id} className="hover:bg-stone-50/70">
-                    <td className="px-4 py-3">
-                      <Link href={`/admin/projects/${p.id}`} className="font-medium text-espresso underline-offset-4 hover:underline">
-                        {eventTitle(p.event)}
-                      </Link>
-                      <p className="text-xs text-stone-500">
-                        {p.reference} · {EVENT_TYPE_LABEL[p.event.eventType] ?? "Celebration"}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p>{p.customer.name}</p>
-                      <p className="text-xs text-stone-500">{p.customer.phone ?? p.customer.email}</p>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-stone-600">{formatDateTime(p.event.eventDate, p.event.timezone).split(",")[0]}</td>
-                    <td className="px-4 py-3 text-stone-600">{p.template?.name ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <StatusBadge status={p.status} />
-                        {p._count.revisions > 0 && (
-                          <span className="text-xs text-red-700">
-                            {p._count.revisions} open request{p._count.revisions === 1 ? "" : "s"}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-stone-600">{p.assignedTo?.name ?? "—"}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-stone-500">{formatDateTime(p.updatedAt)}</td>
+          <>
+            {/* Phones: one card per project instead of a table cut off on the right. */}
+            <ul className="flex flex-col gap-3 md:hidden">
+              {projects.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/admin/projects/${p.id}`}
+                    className="block rounded-xl border border-stone-200 bg-white p-4 transition-colors hover:border-stone-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-espresso"
+                  >
+                    <span className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 font-medium text-espresso">{eventTitle(p.event)}</span>
+                      <StatusBadge status={p.status} />
+                    </span>
+                    <span className="mt-1 block text-sm text-stone-600">
+                      {EVENT_TYPE_LABEL[p.event.eventType] ?? "Celebration"} · {p.template?.name ?? "No template"}
+                    </span>
+                    <span className="mt-1 block text-sm text-stone-600">
+                      {formatDateTime(p.event.eventDate, p.event.timezone).split(",")[0]} · {formatDaysAway(p.event.eventDate, p.event.timezone)}
+                    </span>
+                    <span className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-stone-500">
+                      <span>
+                        {p.customer.name} · {p.reference}
+                      </span>
+                      {p._count.revisions > 0 && (
+                        <span className="font-medium text-red-700">
+                          {p._count.revisions} open request{p._count.revisions === 1 ? "" : "s"}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto rounded-xl border border-stone-200 bg-white md:block">
+              <table className="w-full min-w-[900px] text-left text-sm">
+                <thead className="border-b border-stone-200 bg-stone-50 text-xs uppercase tracking-wide text-stone-500">
+                  <tr>
+                    {["Celebration", "Customer", "Date", "Template", "Status", "Assigned", "Updated"].map((h) => (
+                      <th key={h} scope="col" className="px-4 py-3 font-medium">
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {projects.map((p) => (
+                    <tr key={p.id} className="hover:bg-stone-50/70">
+                      <td className="px-4 py-3">
+                        <Link href={`/admin/projects/${p.id}`} className="font-medium text-espresso underline-offset-4 hover:underline">
+                          {eventTitle(p.event)}
+                        </Link>
+                        <p className="text-xs text-stone-500">
+                          {p.reference} · {EVENT_TYPE_LABEL[p.event.eventType] ?? "Celebration"}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p>{p.customer.name}</p>
+                        <p className="text-xs text-stone-500">{p.customer.phone ?? p.customer.email}</p>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-stone-600">
+                        {formatDateTime(p.event.eventDate, p.event.timezone).split(",")[0]}
+                        <p className="text-xs text-stone-500">{formatDaysAway(p.event.eventDate, p.event.timezone)}</p>
+                      </td>
+                      <td className="px-4 py-3 text-stone-600">{p.template?.name ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <StatusBadge status={p.status} />
+                          {p._count.revisions > 0 && (
+                            <span className="text-xs text-red-700">
+                              {p._count.revisions} open request{p._count.revisions === 1 ? "" : "s"}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-stone-600">{p.assignedTo?.name ?? "—"}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-xs text-stone-500">{formatDateTime(p.updatedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </main>

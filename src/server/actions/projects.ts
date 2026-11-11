@@ -116,7 +116,10 @@ function prefixed(errors: Record<string, string>, prefix: string): Record<string
 export async function updateProjectStatusAction(projectId: string, _: ActionState, fd: FormData): Promise<ActionState> {
   const { user, project } = await loadProject(projectId);
   if (!project) return actionError("Project not found.");
+  if (project.status === "PUBLISHED") return actionError("This invitation is live. Take it offline first, then change its stage.");
+  if (project.status === "ARCHIVED") return actionError("This project is archived. Restore it to design first.");
   const status = str(fd, "status");
+  if (!status) return actionError("Choose a stage first.");
   if (!isProjectStatus(status)) return actionError("Unknown status.");
   if (status === "PUBLISHED" || status === "ARCHIVED") {
     return actionError("Use the Publish or Archive buttons — they also update the live invitation.");

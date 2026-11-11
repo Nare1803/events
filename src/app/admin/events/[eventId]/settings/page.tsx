@@ -20,7 +20,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ event
     <div className="flex flex-col gap-6">
       <PageHeader title="Settings" />
 
-      <ActionForm action={updateSettingsAction.bind(null, event.id)} className="flex flex-col gap-6">
+      <ActionForm action={updateSettingsAction.bind(null, event.id)} className="flex flex-col gap-6" guard>
         <Card>
           <CardHeader title="Address & visibility" description="Publishing is done from the project page once the customer approves." />
           <div className="grid gap-4 md:grid-cols-2">

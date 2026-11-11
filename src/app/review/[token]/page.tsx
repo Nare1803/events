@@ -70,7 +70,7 @@ export default async function ReviewPage({ params, searchParams }: Props) {
       <Link href="/" className="font-serif text-3xl tracking-[0.24em]">
         {brand.name}
       </Link>
-      <p className="mt-16 text-[0.6875rem] font-medium uppercase tracking-[0.32em] text-[#6F5D53]">{interpolate(t.preparedFor, { names: title })}</p>
+      <p className="ore-label mt-16">{interpolate(t.preparedFor, { names: title })}</p>
       <h1 className="mt-6 max-w-xl font-serif text-5xl font-light leading-tight">{closed ? t.closedTitle : t.preparingTitle}</h1>
       <p className="mt-6 max-w-md leading-8 text-[#665449]">{closed ? t.closedText : t.preparingText}</p>
       <span className="mt-12 block h-12 w-px bg-espresso/30" aria-hidden="true" />

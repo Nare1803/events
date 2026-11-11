@@ -13,7 +13,7 @@ import { db } from "@/lib/db";
 import { LOCALE_LABELS, LOCALES } from "@/lib/i18n/locales";
 import { projectChecklist } from "@/lib/projects/checklist";
 import { MUSIC_CHOICE_LABELS, parseBrief, RSVP_FIELD_LABELS } from "@/lib/projects/intake";
-import { isProjectStatus, PROJECT_STATUSES, STATUS_META } from "@/lib/projects/status";
+import { isProjectStatus, manualStatusTargets, STATUS_META } from "@/lib/projects/status";
 import { cn } from "@/lib/utils/cn";
 import { formatDateTime } from "@/lib/utils/dates";
 import { CONTACT_LABELS, CONTACT_METHODS } from "@/lib/validation/project";
@@ -51,13 +51,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
   });
   if (!project) notFound();
 
-  const [checklist, packages, staff] = await Promise.all([
+  const [checklist, packages, staff, guestCount] = await Promise.all([
     projectChecklist(project.eventId),
     db.servicePackage.findMany({ orderBy: { sortOrder: "asc" }, select: { id: true, name: true } }),
     db.user.findMany({ where: { role: { in: ["SUPER_ADMIN", "STAFF"] } }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    db.guest.count({ where: { eventId: project.eventId } }),
   ]);
   const brief = parseBrief(project.intake);
   const status = isProjectStatus(project.status) ? project.status : "NEW_REQUEST";
+  const manualTargets = manualStatusTargets(status);
   const reviewUrl = `${siteUrl()}/review/${project.reviewToken}`;
   const liveUrl = `${siteUrl()}/${project.event.slug}`;
   const editor = `/admin/events/${project.eventId}`;
@@ -139,16 +141,24 @@ export default async function ProjectPage({ params }: { params: Promise<{ projec
               )}
             </div>
 
-            <ActionForm action={updateProjectStatusAction.bind(null, project.id)} className="mt-5 flex flex-wrap items-end gap-2 border-t border-stone-100 pt-4" quiet>
-              <SelectField
-                name="status"
-                label="Set status manually"
-                defaultValue={status}
-                className="w-64"
-                options={PROJECT_STATUSES.filter((s) => s !== "PUBLISHED" && s !== "ARCHIVED").map((s) => ({ value: s, label: STATUS_META[s].label }))}
-              />
-              <SubmitButton variant="secondary">Update</SubmitButton>
-            </ActionForm>
+            {manualTargets.length > 0 ? (
+              <ActionForm action={updateProjectStatusAction.bind(null, project.id)} className="mt-5 flex flex-wrap items-end gap-2 border-t border-stone-100 pt-4" quiet>
+                <SelectField
+                  name="status"
+                  label={`Move to another stage · now “${STATUS_META[status].label}”`}
+                  defaultValue=""
+                  className="w-72"
+                  options={[{ value: "", label: "Choose a stage…" }, ...manualTargets.map((s) => ({ value: s, label: STATUS_META[s].label }))]}
+                />
+                <SubmitButton variant="secondary">Move</SubmitButton>
+              </ActionForm>
+            ) : (
+              <p className="mt-5 border-t border-stone-100 pt-4 text-sm text-stone-600">
+                {status === "PUBLISHED"
+                  ? `Now: Published, live for ${guestCount} ${guestCount === 1 ? "guest" : "guests"}. Earlier stages aren’t offered for a live invitation — to edit it, take it offline first.`
+                  : "Archived. Restore it to design to change its stage."}
+              </p>
+            )}
           </Card>
 
           {/* Customer link */}

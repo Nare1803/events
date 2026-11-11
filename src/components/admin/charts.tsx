@@ -5,6 +5,9 @@ export const RSVP_COLORS = { attending: "#1F72B8", declined: "#C8663A", awaiting
 
 /** One stacked bar: attending / declined / awaiting, with a legend that carries the numbers. */
 export function RsvpProgress({ stats }: { stats: EventStats }) {
+  if (stats.invited === 0 && stats.responded === 0) {
+    return <ChartEmpty title="No guests yet" text="Add guests on the Guests page. Each one gets a personal link, and their replies fill this bar." />;
+  }
   const total = Math.max(1, stats.invited);
   const segments = [
     { key: "attending", label: "Attending", value: stats.attending, color: RSVP_COLORS.attending },
@@ -45,8 +48,25 @@ export function RsvpProgress({ stats }: { stats: EventStats }) {
   );
 }
 
+/** What a chart will show, and when, in place of an empty plot. */
+function ChartEmpty({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="flex min-h-36 flex-col items-center justify-center rounded-lg border border-dashed border-stone-300 bg-stone-50 px-6 py-8 text-center">
+      <p className="font-medium text-espresso">{title}</p>
+      <p className="mt-1 max-w-sm text-sm text-stone-500">{text}</p>
+    </div>
+  );
+}
+
 /** Daily invitation views, last 21 days. Hover or focus a bar for its value; a table is provided for screen readers. */
-export function ViewsChart({ days }: { days: EventStats["days"] }) {
+export function ViewsChart({ days, live }: { days: EventStats["days"]; live: boolean }) {
+  if (days.every((d) => d.views === 0)) {
+    return live ? (
+      <ChartEmpty title="No views in the last 21 days" text="Visits are counted once per browser session. Studio and review previews aren’t counted." />
+    ) : (
+      <ChartEmpty title="No views yet" text="Views appear here after you publish, counted once per browser session. Studio and review previews aren’t counted." />
+    );
+  }
   const max = Math.max(1, ...days.map((d) => d.views));
   const label = (day: string) => new Date(`${day}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
   return (

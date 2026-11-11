@@ -345,7 +345,7 @@ export function RsvpForm(props: RsvpFormProps) {
         </Field>
 
         <fieldset aria-describedby={describedBy("attendance")}>
-          <legend className="inv-eyebrow mb-5 text-[0.625rem] text-inv-muted">{t.attendance}</legend>
+          <legend className="inv-label mb-3">{t.attendance}</legend>
           <div className="grid gap-3 sm:grid-cols-2" id={fieldId("attendance")} tabIndex={-1}>
             {(["ATTENDING", "DECLINED"] as const).map((option) => {
               const checked = values.attendance === option;
@@ -354,7 +354,7 @@ export function RsvpForm(props: RsvpFormProps) {
                   key={option}
                   className={cn(
                     "flex min-h-16 items-center gap-4 rounded-[var(--inv-card-radius)] border px-5 py-4 transition-colors duration-500",
-                    checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
+                    checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-control hover:border-inv-text",
                   )}
                 >
                   <input
@@ -425,7 +425,7 @@ export function RsvpForm(props: RsvpFormProps) {
 
             {settings.askTransportation && (
               <fieldset>
-                <legend className="inv-eyebrow mb-4 text-[0.625rem] text-inv-muted">{t.transport}</legend>
+                <legend className="inv-label mb-3">{t.transport}</legend>
                 <div className="flex gap-3">
                   {(["yes", "no"] as const).map((option) => {
                     const checked = values.transportationNeeded === option;
@@ -433,8 +433,8 @@ export function RsvpForm(props: RsvpFormProps) {
                       <label
                         key={option}
                         className={cn(
-                          "flex min-h-12 min-w-24 items-center justify-center rounded-[var(--inv-radius)] border px-6 text-sm transition-colors duration-500 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2",
-                          checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-line hover:border-inv-text",
+                          "flex min-h-13 min-w-24 items-center justify-center rounded-[var(--inv-radius)] border px-6 text-sm transition-colors duration-500 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2",
+                          checked ? "border-inv-text bg-inv-text text-inv-bg" : "border-inv-control hover:border-inv-text",
                         )}
                       >
                         <input
@@ -507,7 +507,7 @@ export function RsvpForm(props: RsvpFormProps) {
           {submitting ? t.submitting : existing || confirmation ? t.update : t.submit}
         </button>
         {settings.deadlineLabel && (
-          <p className="text-xs text-inv-muted">{interpolate(t.deadline, { date: settings.deadlineLabel })}</p>
+          <p className="text-[0.8125rem] text-inv-muted">{interpolate(t.deadline, { date: settings.deadlineLabel })}</p>
         )}
       </div>
     </form>
@@ -538,13 +538,13 @@ type FieldProps = {
 function Field({ label, id, optional, hint, hintId, error, errorId, children }: FieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="inv-eyebrow flex items-baseline justify-between gap-4 text-[0.625rem] text-inv-muted">
+      <label htmlFor={id} className="inv-label mb-2 flex items-baseline justify-between gap-4">
         <span>{label}</span>
-        {optional && <span className="normal-case tracking-normal opacity-70">{optional}</span>}
+        {optional && <span className="font-normal normal-case tracking-normal">{optional}</span>}
       </label>
       {children}
       {hint && (
-        <p id={hintId} className="mt-2 text-xs text-inv-muted">
+        <p id={hintId} className="mt-2 text-[0.8125rem] leading-5 text-inv-muted">
           {hint}
         </p>
       )}
@@ -556,7 +556,7 @@ function Field({ label, id, optional, hint, hintId, error, errorId, children }: 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} className="mt-2 text-xs text-inv-accent" role="alert">
+    <p id={id} className="mt-2 text-[0.8125rem] leading-5 text-inv-accent" role="alert">
       {message}
     </p>
   );

@@ -27,8 +27,6 @@ export const ru: Dictionary = {
   music: {
     play: "Включить музыку",
     pause: "Поставить музыку на паузу",
-    mute: "Выключить звук",
-    unmute: "Включить звук",
     nowPlaying: "Сейчас звучит",
   },
   hero: {
@@ -189,6 +187,7 @@ export const ru: Dictionary = {
     changesLabel: "Что бы вы хотели изменить?",
     changesHint: "Пишите как можно конкретнее — слово, фото, время, цвет.",
     sendChanges: "Отправить",
+    sending: "Отправляем…",
     cancel: "Отмена",
     confirmApprove: "Подтвердить приглашение для публикации?",
     approvedTitle: "Спасибо — приглашение подтверждено.",

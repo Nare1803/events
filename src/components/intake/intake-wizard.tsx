@@ -212,7 +212,7 @@ export function IntakeWizard({ templates, packages, wantedTemplate, wantedPackag
         <p className="mt-6 max-w-md leading-7 text-inv-muted">{intakeCopy.thanksNext}</p>
         {done.reference && (
           <p className="mt-10 border-y border-inv-line px-8 py-4">
-            <span className="inv-eyebrow block text-[0.625rem] text-inv-muted">{intakeCopy.reference}</span>
+            <span className="inv-label block">{intakeCopy.reference}</span>
             <span className="mt-2 block font-serif text-2xl tracking-wider">{done.reference}</span>
           </p>
         )}
@@ -247,7 +247,7 @@ export function IntakeWizard({ templates, packages, wantedTemplate, wantedPackag
           <Link href="/" className="font-serif text-xl tracking-[0.24em]">
             {brand.name}
           </Link>
-          <p className="text-xs text-inv-muted" aria-live="polite">
+          <p className="text-[0.8125rem] text-inv-muted" aria-live="polite">
             {state.step + 1} / {steps.length} · {intakeCopy.steps[state.step]}
           </p>
         </div>
@@ -298,7 +298,7 @@ export function IntakeWizard({ templates, packages, wantedTemplate, wantedPackag
               {intakeCopy.back}
             </button>
           ) : (
-            <span className="text-xs text-inv-muted">{intakeCopy.saved}</span>
+            <span className="text-[0.8125rem] text-inv-muted">{intakeCopy.saved}</span>
           )}
           {state.step < LAST ? (
             <button type="button" onClick={next} className="inv-button inv-button-solid w-full sm:w-auto">

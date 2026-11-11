@@ -53,7 +53,7 @@ export function Hero({ view }: HeroProps) {
 function FullBleedHero({ view }: HeroProps) {
   const { event, theme, t } = view;
   return (
-    <header className="relative isolate flex min-h-[560px] h-svh flex-col items-center justify-between overflow-hidden bg-inv-inverse-bg px-6 pb-10 pt-12 text-center text-inv-inverse-text sm:pb-14 sm:pt-16">
+    <header className="relative isolate flex min-h-[560px] h-svh flex-col items-center justify-between overflow-hidden bg-inv-inverse-bg px-6 pb-10 pt-[calc(5rem+var(--inv-banner-h,0px))] text-center text-inv-inverse-text sm:pb-14 sm:pt-[calc(4rem+var(--inv-banner-h,0px))]">
       {event.heroImage && (
         <div className="absolute inset-0 -z-20 group-data-[opened=true]/inv:animate-settle">
           <Image src={event.heroImage} alt="" fill preload sizes="100vw" quality={80} className="object-cover" />
@@ -91,7 +91,7 @@ function FullBleedHero({ view }: HeroProps) {
 function FramedHero({ view }: HeroProps) {
   const { event, theme, t } = view;
   return (
-    <header className="flex min-h-svh flex-col items-center justify-center gap-10 bg-inv-bg px-6 py-16 text-center text-inv-text">
+    <header className="flex min-h-svh flex-col items-center justify-center gap-10 bg-inv-bg px-6 pb-16 pt-[calc(4.5rem+var(--inv-banner-h,0px))] text-center text-inv-text">
       {theme.showMonogram && (
         <p {...enter(100, "inv-eyebrow text-inv-accent")}>
           {event.monogram}
@@ -119,7 +119,7 @@ function FramedHero({ view }: HeroProps) {
 function BotanicalHero({ view }: HeroProps) {
   const { event, theme, t } = view;
   return (
-    <header className="flex min-h-svh flex-col items-center justify-center gap-8 bg-inv-bg px-5 py-14 text-center text-inv-text">
+    <header className="flex min-h-svh flex-col items-center justify-center gap-8 bg-inv-bg px-5 pb-14 pt-[calc(4.5rem+var(--inv-banner-h,0px))] text-center text-inv-text">
       <div {...enter(100, "flex flex-col items-center gap-4 text-inv-accent")}>
         <Sprig />
         <p className="inv-eyebrow">{theme.showMonogram ? event.monogram : event.label}</p>

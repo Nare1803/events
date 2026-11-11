@@ -23,7 +23,7 @@ type Props = {
 };
 
 /**
- * HY · EN · RU pill (44px buttons) and a 48px round music button, fixed 12px
+ * Հայ · Eng · Рус pill (44px buttons) and a 48px round music button, fixed 12px
  * from the top and 14px from the right — 28px on the intro and the closing,
  * clear of the sprocket edges. Dark over darkness, light over paper.
  */
@@ -61,7 +61,7 @@ export function FilmControls({ locales, current, allowSwitch, label, music, musi
   return (
     <div
       className={cn(
-        "rf-controls fixed top-[max(12px,env(safe-area-inset-top))] z-[60] flex items-center gap-2",
+        "rf-controls fixed top-[calc(max(12px,env(safe-area-inset-top))+var(--inv-banner-h,0px))] z-[60] flex items-center gap-2",
         dark ? "rf-dark" : "rf-light",
         edge ? "right-7" : "right-3.5",
       )}
@@ -69,7 +69,7 @@ export function FilmControls({ locales, current, allowSwitch, label, music, musi
     >
       {allowSwitch && (
         <nav aria-label={label} className="rf-pill">
-          {/* Always HY · EN · RU, whatever order the couple enabled them in. */}
+          {/* Always Հայ · Eng · Рус, whatever order the couple enabled them in. */}
           {LOCALES.filter((l) => locales.includes(l)).map((locale) => (
             <Link
               key={locale}
@@ -82,12 +82,12 @@ export function FilmControls({ locales, current, allowSwitch, label, music, musi
               aria-current={locale === current ? "true" : undefined}
               className={cn("rf-pill-item", locale === current && "is-on")}
             >
-              {locale.toUpperCase()}
+              {LOCALE_LABELS[locale].tag}
             </Link>
           ))}
         </nav>
       )}
-      {music && <MusicPlayer ref={musicRef} music={music} visible t={musicT} appearance="round" fadeInMs={1500} className="rf-round" />}
+      {music && <MusicPlayer ref={musicRef} music={music} t={musicT} fadeInMs={1500} className="rf-round" />}
     </div>
   );
 }

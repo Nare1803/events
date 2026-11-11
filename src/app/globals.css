@@ -8,6 +8,17 @@
   --color-mocha: #806d62;
   --color-espresso: #292421;
 
+  /*
+   * Spec sheet (product review, p. 14), contrast on ivory · nude. Mocha (4.3 · 3.7)
+   * and taupe are for large text and ornament only; small text uses these.
+   */
+  --color-ink-muted: #665449; /* 6.3 · 5.4 — secondary and help text */
+  --color-ink-label: #6f5d53; /* 5.5 · 4.7 — small labels and eyebrows */
+  --color-edge: #857262; /* 4.1 · 3.4 — field, chip and ghost-button borders */
+  --color-card: #fbf8f4; /* cards and field fill */
+  --color-error: #a1291d;
+  --color-success: #2e5d34;
+
   /* Invitation theme tokens — values come from the active theme (src/lib/themes). */
   --color-inv-bg: var(--inv-bg);
   --color-inv-surface: var(--inv-surface);
@@ -15,6 +26,7 @@
   --color-inv-muted: var(--inv-muted);
   --color-inv-accent: var(--inv-accent);
   --color-inv-line: var(--inv-line);
+  --color-inv-control: var(--inv-control);
   --color-inv-inverse-bg: var(--inv-inverse-bg);
   --color-inv-inverse-text: var(--inv-inverse-text);
 
@@ -165,11 +177,18 @@
     padding: 0 2.25rem;
     border: var(--inv-border) solid currentColor;
     border-radius: var(--inv-radius);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.28em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     transition: background-color 0.5s var(--ease-editorial), color 0.5s var(--ease-editorial);
+  }
+
+  /* Armenian reads poorly in tracked capitals: own case, a size up. */
+  .inv-button:lang(hy) {
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+    text-transform: none;
   }
 
   .inv-button:hover:not(:disabled) {
@@ -193,22 +212,120 @@
     color: var(--inv-text);
   }
 
+  /*
+   * Fields keep the underline look, but the line is 1.5px at 3:1+ against the
+   * page (theme `control` colour) over a faint fill, so guests see where to type.
+   */
   .inv-field {
     width: 100%;
-    min-height: 3rem;
-    padding: 0.75rem 0;
+    min-height: 3.25rem;
+    padding: 0.75rem;
     border: 0;
-    border-bottom: var(--inv-border) solid var(--inv-line);
+    border-bottom: 1.5px solid var(--inv-control);
     border-radius: 0;
-    background: transparent;
+    background: color-mix(in srgb, var(--inv-text) 4%, transparent);
     color: var(--inv-text);
     font-size: 1rem;
-    transition: border-color 0.4s var(--ease-editorial);
+    transition: border-color 0.4s var(--ease-editorial), box-shadow 0.4s var(--ease-editorial);
   }
 
   .inv-field:focus {
     outline: none;
     border-bottom-color: var(--inv-text);
+    box-shadow: inset 0 -1px 0 var(--inv-text);
+  }
+
+  .inv-field[aria-invalid="true"] {
+    border-bottom-color: var(--inv-accent);
+    box-shadow: inset 0 -1px 0 var(--inv-accent);
+  }
+
+  /* Website and client pages: small labels and eyebrows (spec sheet, p. 14). */
+  .ore-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-label);
+  }
+
+  .ore-label:lang(hy) {
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /* Field labels and legends: 12px tracked capitals; Armenian 13px in its own case. */
+  .inv-label {
+    font-family: var(--inv-font-body);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--inv-muted);
+  }
+
+  .inv-label:lang(hy) {
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /*
+   * One control set in every classic invitation: Հայ · Eng · Рус and the music
+   * button, top-right. 48px pill with 48 × 44 targets; the chosen language filled.
+   */
+  .inv-pill {
+    display: flex;
+    align-items: center;
+    padding: 1px;
+    border: 1px solid var(--inv-control);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--inv-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .inv-pill-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    height: 2.75rem;
+    padding: 0 0.625rem;
+    border-radius: 999px;
+    color: var(--inv-text);
+    font-family: var(--inv-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: background-color 0.3s var(--ease-editorial), color 0.3s var(--ease-editorial);
+  }
+
+  .inv-pill-item.is-on {
+    background: var(--inv-text);
+    color: var(--inv-bg);
+  }
+
+  .inv-round {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--inv-control);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--inv-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    color: var(--inv-text);
+  }
+
+  .inv-controls :focus-visible {
+    outline: 2px solid var(--inv-text);
+    outline-offset: 2px;
   }
 
   .inv-field::placeholder {
@@ -219,13 +336,14 @@
   /* Garden sections: soft filled fields instead of underlines. */
   [data-sections="garden"] .inv-field {
     padding-inline: 1.25rem;
-    border: var(--inv-border) solid var(--inv-line);
+    border: var(--inv-border) solid var(--inv-control);
     border-radius: 1.25rem;
     background: var(--inv-bg);
   }
 
   [data-sections="garden"] .inv-field:focus {
     border-color: var(--inv-accent);
+    box-shadow: 0 0 0 1px var(--inv-accent);
   }
 
   /* -------------------------------------------------------------------------
@@ -1729,8 +1847,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.75rem;
+    min-width: 2.75rem;
     height: 2.75rem;
+    padding: 0 0.5rem;
     border-radius: 999px;
     color: var(--rf-fg);
     font-size: 0.75rem;

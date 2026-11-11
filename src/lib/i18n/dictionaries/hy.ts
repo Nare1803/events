@@ -27,8 +27,6 @@ export const hy: Dictionary = {
   music: {
     play: "Միացնել երաժշտությունը",
     pause: "Դադարեցնել երաժշտությունը",
-    mute: "Անջատել ձայնը",
-    unmute: "Միացնել ձայնը",
     nowPlaying: "Հնչում է",
   },
   hero: {
@@ -189,6 +187,7 @@ export const hy: Dictionary = {
     changesLabel: "Ի՞նչ կցանկանայիք փոխել",
     changesHint: "Գրեք որքան հնարավոր է մանրամասն՝ բառ, լուսանկար, ժամ, գույն։",
     sendChanges: "Ուղարկել",
+    sending: "Ուղարկվում է…",
     cancel: "Չեղարկել",
     confirmApprove: "Հաստատե՞լ հրավերը հրապարակման համար։",
     approvedTitle: "Շնորհակալություն, Ձեր հրավերը հաստատված է։",

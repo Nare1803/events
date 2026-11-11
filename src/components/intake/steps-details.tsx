@@ -66,7 +66,7 @@ export function StepDress({ state, update }: StepProps) {
           <Field label="Dress code name" value={d.name} onChange={(v) => set({ name: v })} placeholder="Elegant evening" maxLength={80} />
           <Field label="Description" optional multiline rows={3} value={d.description} onChange={(v) => set({ description: v })} maxLength={600} placeholder="Floor-length gowns and dark suits are warmly welcomed." />
           <fieldset>
-            <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">Preferred colours (up to 6)</legend>
+            <legend className="inv-label">Preferred colours (up to 6)</legend>
             <div className="mt-4 flex flex-wrap items-center gap-3">
               {d.colors.map((c, i) => (
                 <span key={i} className="flex items-center gap-1">
@@ -75,7 +75,7 @@ export function StepDress({ state, update }: StepProps) {
                     value={c}
                     aria-label={`Colour ${i + 1}`}
                     onChange={(e) => set({ colors: d.colors.map((x, j) => (j === i ? e.target.value.toUpperCase() : x)) })}
-                    className="h-11 w-11 cursor-pointer rounded-full border border-inv-line bg-transparent p-0.5"
+                    className="h-11 w-11 cursor-pointer rounded-full border border-inv-control bg-transparent p-0.5"
                   />
                   <button type="button" onClick={() => set({ colors: d.colors.filter((_, j) => j !== i) })} className="px-1 text-sm text-inv-muted" aria-label={`Remove colour ${i + 1}`}>
                     ×
@@ -134,6 +134,7 @@ export function StepRsvp({ state, update }: StepProps) {
         value={state.rsvp.deadline}
         onChange={(v) => update((s) => ({ ...s, rsvp: { ...s.rsvp, deadline: v } }))}
         hint="We'll close replies at the end of this day."
+        dateHint={(day) => `Replies close at the end of ${day}.`}
       />
     </>
   );
@@ -186,9 +187,9 @@ export function StepGuests({ state, update }: StepProps) {
       </div>
       {g.mode === "upload" && (
         <div className="mt-10">
-          <label className="flex cursor-pointer flex-col items-center justify-center border border-dashed border-inv-line px-6 py-10 text-center hover:border-inv-text has-[:focus-visible]:outline has-[:focus-visible]:outline-2">
+          <label className="flex cursor-pointer flex-col items-center justify-center border border-dashed border-inv-control px-6 py-10 text-center hover:border-inv-text has-[:focus-visible]:outline has-[:focus-visible]:outline-2">
             <span className="font-serif text-xl">{g.fileName || "Choose a file"}</span>
-            <span className="mt-2 text-xs text-inv-muted">Columns: name, phone, email, allowedGuests — only name is required.</span>
+            <span className="mt-2 text-[0.8125rem] text-inv-muted">Columns: name, phone, email, allowedGuests — only name is required.</span>
             <input type="file" accept=".csv,.xlsx,text/csv" className="sr-only" onChange={(e) => void onFile(e.target.files?.[0])} />
           </label>
           <p className="mt-3 text-center">

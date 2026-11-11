@@ -11,6 +11,9 @@ export const UPLOAD_KINDS = ["HERO", "GALLERY", "ENGAGEMENT", "DRESS_CODE", "MUS
 export type UploadKind = (typeof UPLOAD_KINDS)[number];
 
 /** How many files of each kind the order form accepts. */
+/** Largest photo or song a customer (or the studio) may upload, in megabytes. */
+export const UPLOAD_MAX_MB = 12;
+
 export const UPLOAD_LIMITS: Record<UploadKind, number> = { HERO: 1, GALLERY: 12, ENGAGEMENT: 6, DRESS_CODE: 1, MUSIC: 1 };
 
 export const RSVP_FIELDS = ["attendance", "guestCount", "companions", "transportation", "dietary", "message", "phone"] as const;

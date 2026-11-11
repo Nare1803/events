@@ -15,6 +15,8 @@ export type ThemeTokens = {
     muted: string;
     accent: string;
     line: string;
+    /** Edges of fields, answer tiles and floating controls: at least 3:1 against the background. Falls back to `muted`. */
+    control?: string;
     /** Dark band used for the hero overlay, intro screen and closing section */
     inverseBackground: string;
     inverseText: string;

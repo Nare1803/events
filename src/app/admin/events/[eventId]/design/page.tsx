@@ -1,6 +1,7 @@
 import { ActionForm, SubmitButton } from "@/components/forms/action-form";
 import { ColorField } from "@/components/forms/color-field";
 import { TextField, Toggle } from "@/components/forms/fields";
+import { TemplatePreview } from "@/components/site/template-preview";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
 import { requireEventAccess } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -17,14 +18,13 @@ export default async function DesignPage({ params }: { params: Promise<{ eventId
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Template" description="The template controls presentation; the event data controls content. Every template works in Armenian, English and Russian." />
-      <ActionForm action={updateDesignAction.bind(null, event.id)} className="flex flex-col gap-6">
+      <ActionForm action={updateDesignAction.bind(null, event.id)} className="flex flex-col gap-6" guard>
         <Card>
           <CardHeader title="Theme" />
           <fieldset>
             <legend className="sr-only">Theme</legend>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 2xl:grid-cols-6">
               {THEMES.map((theme) => {
-                const c = theme.tokens.colors;
                 return (
                   <label
                     key={theme.id}
@@ -42,14 +42,11 @@ export default async function DesignPage({ params }: { params: Promise<{ eventId
                       disabled={!theme.available}
                       className="sr-only"
                     />
-                    <div className="flex h-28 flex-col items-center justify-center" style={{ background: c.background, color: c.text }} aria-hidden="true">
-                      <span className="font-serif text-2xl font-light">A &amp; D</span>
-                      <span className="mt-1 text-[9px] tracking-[0.3em]">18 · 07 · 2027</span>
-                      <span className="mt-3 flex gap-1">
-                        {[c.surface, c.accent, c.inverseBackground].map((color) => (
-                          <span key={color} className="h-2.5 w-2.5 rounded-full ring-1 ring-black/10" style={{ background: color }} />
-                        ))}
-                      </span>
+                    {/* The same miniature as the website, so the studio picks by the real look. */}
+                    <div className="flex justify-center bg-stone-100 px-6 py-4">
+                      <div className="w-full max-w-40 overflow-hidden rounded-md text-[6.5px] shadow-sm ring-1 ring-black/5">
+                        <TemplatePreview tokens={theme.tokens} heroVariant={theme.variants.hero} muted={!theme.available} />
+                      </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-1 border-t border-stone-200 bg-white p-3">
                       <span className="flex items-center justify-between gap-2 text-sm font-medium">

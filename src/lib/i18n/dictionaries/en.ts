@@ -29,8 +29,6 @@ export const en = {
   music: {
     play: "Play music",
     pause: "Pause music",
-    mute: "Mute",
-    unmute: "Unmute",
     nowPlaying: "Now playing",
   },
   hero: {
@@ -198,6 +196,7 @@ export const en = {
     changesLabel: "What would you like us to change?",
     changesHint: "Be as specific as you like — a word, a photo, a time, a colour.",
     sendChanges: "Send my notes",
+    sending: "Sending…",
     cancel: "Cancel",
     confirmApprove: "Approve this invitation for publishing?",
     approvedTitle: "Thank you — your invitation is approved.",

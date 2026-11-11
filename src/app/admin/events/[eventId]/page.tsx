@@ -61,7 +61,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ event
 
         <Card>
           <CardHeader title="Invitation views" description="Anonymous daily page views · last 21 days" />
-          <ViewsChart days={stats.days} />
+          <ViewsChart days={stats.days} live={event.status === "PUBLISHED"} />
         </Card>
       </div>
 

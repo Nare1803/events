@@ -87,29 +87,9 @@ export function ScheduleIcon({ name, ...props }: IconProps & { name: string | nu
   return <Svg {...props}>{paths}</Svg>;
 }
 
-export const PlayIcon = (p: IconProps) => (
-  <Svg {...p}>
-    <path d="M8 5.5v13l10-6.5z" fill="currentColor" stroke="none" />
-  </Svg>
-);
-
 export const PauseIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M8 5v14M16 5v14" strokeWidth={1.6} />
-  </Svg>
-);
-
-export const VolumeIcon = (p: IconProps) => (
-  <Svg {...p}>
-    <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" />
-    <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
-  </Svg>
-);
-
-export const MuteIcon = (p: IconProps) => (
-  <Svg {...p}>
-    <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" />
-    <path d="m16 9.5 5 5M21 9.5l-5 5" />
   </Svg>
 );
 

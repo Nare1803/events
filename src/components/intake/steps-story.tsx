@@ -25,7 +25,7 @@ export function StepEvent({ state, update, errors }: StepProps) {
     <>
       <StepHeading eyebrow="Step one" title="Your event" text="The essentials — everything else can come later." />
       <fieldset>
-        <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">What are we celebrating?</legend>
+        <legend className="inv-label">What are we celebrating?</legend>
         <div className="mt-4 flex flex-wrap gap-2">
           {EVENT_TYPES.map((t) => (
             <Chip key={t.value} selected={state.event.type === t.value} onClick={() => set({ type: t.value })}>
@@ -33,7 +33,7 @@ export function StepEvent({ state, update, errors }: StepProps) {
             </Chip>
           ))}
         </div>
-        {!couple && <p className="mt-3 text-xs text-inv-muted">Our collections are crafted for weddings first — we&apos;ll adapt the wording for your celebration.</p>}
+        {!couple && <p className="mt-3 text-[0.8125rem] text-inv-muted">Our collections are crafted for weddings first — we&apos;ll adapt the wording for your celebration.</p>}
       </fieldset>
       <div className="mt-10 grid gap-8 sm:grid-cols-2">
         <Field label={couple ? "Partner 1 name" : "Name"} value={state.event.partnerOne} onChange={(v) => set({ partnerOne: v })} error={errors["event.partnerOne"]} maxLength={60} autoComplete="off" />
@@ -46,10 +46,17 @@ export function StepEvent({ state, update, errors }: StepProps) {
           maxLength={60}
           autoComplete="off"
         />
-        <Field label="Event date" type="date" value={state.event.date} onChange={(v) => set({ date: v })} error={errors["event.date"]} />
+        <Field
+          label="Event date"
+          type="date"
+          value={state.event.date}
+          onChange={(v) => set({ date: v })}
+          error={errors["event.date"]}
+          dateHint={(day) => `Shown to guests as “${day}”, in their language.`}
+        />
       </div>
       <fieldset className="mt-10">
-        <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">Invitation language</legend>
+        <legend className="inv-label">Invitation language</legend>
         <div className="mt-4 flex flex-wrap gap-2">
           {LOCALES.map((l) => (
             <Chip key={l} selected={state.event.locale === l} onClick={() => set({ locale: l, extraLocales: state.event.extraLocales.filter((x) => x !== l) })}>
@@ -98,7 +105,7 @@ export function StepStyle({ state, update, templates }: StepProps & { templates:
                 >
                   <TemplatePreview tokens={t.tokens} heroVariant={t.heroVariant} muted={!t.available} />
                   {!t.available && (
-                    <span className="absolute left-3 top-3 bg-inv-bg px-2.5 py-1 text-[0.55rem] font-medium uppercase tracking-[0.24em]">Coming soon</span>
+                    <span className="absolute left-3 top-3 bg-inv-bg px-2.5 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.2em]">Coming soon</span>
                   )}
                 </span>
                 <span className="mt-4 block font-serif text-2xl">{t.name}</span>
@@ -139,7 +146,7 @@ export function StepStory({ state, update }: StepProps) {
         />
       )}
       <fieldset className="mt-12">
-        <legend className="inv-eyebrow text-[0.625rem] text-inv-muted">How would you describe your celebration?</legend>
+        <legend className="inv-label">How would you describe your celebration?</legend>
         <div className="mt-4 flex flex-wrap gap-2">
           {VIBES.map((v) => {
             const on = state.story.vibe.includes(v);
@@ -197,7 +204,7 @@ export function StepMusic({ state, update, errors }: StepProps) {
           <Uploader
             kind="MUSIC"
             label="Your song"
-            hint="MP3 or M4A, up to 12 MB."
+            hint="MP3 or M4A."
             max={1}
             audio
             accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/wav"

@@ -5,6 +5,10 @@ import { interpolate, type Dictionary } from "@/lib/i18n";
 import { formatLongDate } from "@/lib/utils/dates";
 import { CopyLink } from "./copy-link";
 
+/** Copy / WhatsApp: 44px tall with a visible edge, easy to tap on a phone. */
+const CHIP =
+  "inline-flex min-h-11 items-center border border-edge px-4 text-[0.8125rem] font-semibold text-espresso transition-colors hover:bg-espresso hover:text-ivory";
+
 type PortalProps = {
   token: string;
   event: { id: string; slug: string; timezone: string };
@@ -38,17 +42,17 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
       <header className="border-b border-espresso/10">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
           <span className="font-serif text-2xl tracking-[0.24em]">{brand.name}</span>
-          <span className="text-[0.625rem] font-medium uppercase tracking-[0.28em] text-[#6F5D53]">{t.privatePage}</span>
+          <span className="ore-label">{t.privatePage}</span>
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-6 py-16 text-center sm:py-24">
-        <p className="text-[0.6875rem] font-medium uppercase tracking-[0.32em] text-[#6F5D53]">{t.liveTitle}</p>
+        <p className="ore-label">{t.liveTitle}</p>
         <h1 className="mt-6 font-serif text-5xl font-light sm:text-7xl">{title}</h1>
         <p className="mx-auto mt-6 max-w-lg leading-8 text-[#665449]">{t.liveText}</p>
 
         <div className="mx-auto mt-10 max-w-xl border-y border-espresso/15 py-6">
-          <p className="text-[0.625rem] font-medium uppercase tracking-[0.28em] text-[#665449]">{t.generalLink}</p>
+          <p className="ore-label">{t.generalLink}</p>
           <p className="mt-3 break-all font-serif text-2xl">{publicUrl.replace(/^https?:\/\//, "")}</p>
           <div className="mt-2 flex justify-center gap-8">
             <CopyLink value={publicUrl} label={t.copy} copiedLabel={t.copied} className="inv-link" />
@@ -74,7 +78,7 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
         <dl className="mt-8 grid grid-cols-2 border-y border-espresso/15 sm:grid-cols-5">
           {stats.map((s) => (
             <div key={s.label} className="flex flex-col-reverse items-center gap-1 py-6">
-              <dt className="text-[0.625rem] font-medium uppercase tracking-[0.24em] text-[#665449]">{s.label}</dt>
+              <dt className="ore-label">{s.label}</dt>
               <dd className="font-serif text-4xl tabular-nums">{s.value}</dd>
             </div>
           ))}
@@ -86,12 +90,12 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
         ) : (
           <div className="mt-10 overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="text-[0.625rem] uppercase tracking-[0.2em] text-[#665449]">
+              <thead className="ore-label">
                 <tr className="border-b border-espresso/15">
-                  <th scope="col" className="py-3 pr-4 font-medium">{t.guest}</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">{t.link}</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">{t.response}</th>
-                  <th scope="col" className="py-3 font-medium">{t.details}</th>
+                  <th scope="col" className="py-3 pr-4 font-semibold">{t.guest}</th>
+                  <th scope="col" className="py-3 pr-4 font-semibold">{t.link}</th>
+                  <th scope="col" className="py-3 pr-4 font-semibold">{t.response}</th>
+                  <th scope="col" className="py-3 font-semibold">{t.details}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-espresso/10">
@@ -102,13 +106,13 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
                     <tr key={g.id} className="align-top">
                       <td className="py-4 pr-4 font-serif text-lg">{g.name}</td>
                       <td className="py-4 pr-4">
-                        <span className="flex flex-wrap items-center gap-x-4">
-                          <CopyLink value={url} label={t.copy} copiedLabel={t.copied} className="text-xs font-medium uppercase tracking-[0.18em] underline underline-offset-4" />
+                        <span className="flex flex-wrap items-center gap-2">
+                          <CopyLink value={url} label={t.copy} copiedLabel={t.copied} className={CHIP} />
                           <a
                             href={`https://wa.me/${phone}?text=${encodeURIComponent(`${title}\n${url}`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs font-medium uppercase tracking-[0.18em] underline underline-offset-4"
+                            className={CHIP}
                           >
                             WhatsApp
                           </a>
@@ -119,7 +123,7 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
                       </td>
                       <td className="py-4 text-[#665449]">
                         {[g.rsvp?.companionNames, g.rsvp?.dietaryRestrictions].filter(Boolean).join(" · ") || "—"}
-                        {g.rsvp && <span className="block text-xs">{formatLongDate(g.rsvp.updatedAt, event.timezone, locale)}</span>}
+                        {g.rsvp && <span className="block text-[0.8125rem]">{formatLongDate(g.rsvp.updatedAt, event.timezone, locale)}</span>}
                       </td>
                     </tr>
                   );
@@ -136,7 +140,7 @@ export async function CouplePortal({ token, event, title, t, locale }: PortalPro
               {messages.map((m) => (
                 <figure key={m.id} className="border border-espresso/10 bg-white/40 p-6">
                   <blockquote className="font-serif text-xl italic leading-relaxed">“{m.message}”</blockquote>
-                  <figcaption className="mt-4 text-[0.625rem] font-medium uppercase tracking-[0.24em] text-[#665449]">{m.name}</figcaption>
+                  <figcaption className="ore-label mt-4">{m.name}</figcaption>
                 </figure>
               ))}
             </div>

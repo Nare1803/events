@@ -31,7 +31,7 @@ export default async function InvitationEditorPage({ params }: { params: Promise
         }
       />
 
-      <ActionForm action={updateInvitationAction.bind(null, event.id)} className="flex flex-col gap-6">
+      <ActionForm action={updateInvitationAction.bind(null, event.id)} className="flex flex-col gap-6" guard>
         <Card>
           <CardHeader title="The celebration" />
           <div className="grid gap-5 md:grid-cols-2">
@@ -84,12 +84,12 @@ export default async function InvitationEditorPage({ params }: { params: Promise
           </div>
         </Card>
 
-        <div className="sticky bottom-4 z-10 flex justify-end">
-          <SubmitButton className="shadow-lg">Save invitation</SubmitButton>
+        <div className="flex justify-end">
+          <SubmitButton>Save invitation</SubmitButton>
         </div>
       </ActionForm>
 
-      <ActionForm action={updateDressCodeAction.bind(null, event.id)}>
+      <ActionForm action={updateDressCodeAction.bind(null, event.id)} guard>
         <Card>
           <CardHeader title="Dress code" description="Optional. Up to six palette colours with names." />
           <Toggle name="enabled" label="Show dress code section" defaultChecked={dressCode?.enabled ?? false} />

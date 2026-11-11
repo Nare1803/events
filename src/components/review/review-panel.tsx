@@ -48,7 +48,7 @@ export function ReviewPanel({ token, status: initialStatus, revisions, revisions
   return (
     <section aria-labelledby={`${fieldId}-title`} className="bg-inv-bg px-6 py-20 text-center text-inv-text sm:py-28">
       <div className="mx-auto max-w-xl">
-        <p className="inv-eyebrow text-inv-accent">{t.privatePreview}</p>
+        <p className="inv-label text-inv-accent">{t.privatePreview}</p>
 
         {status === "APPROVED" ? (
           <>
@@ -106,7 +106,7 @@ export function ReviewPanel({ token, status: initialStatus, revisions, revisions
               startTransition(() => sendChanges(fd));
             }}
           >
-            <label htmlFor={fieldId} className="inv-eyebrow block text-[0.625rem] text-inv-muted">
+            <label htmlFor={fieldId} className="inv-label block">
               {t.changesLabel}
             </label>
             <textarea
@@ -120,7 +120,7 @@ export function ReviewPanel({ token, status: initialStatus, revisions, revisions
               aria-describedby={`${fieldId}-hint`}
               autoFocus
             />
-            <p id={`${fieldId}-hint`} className="mt-2 text-xs text-inv-muted">
+            <p id={`${fieldId}-hint`} className="mt-2 text-sm leading-6 text-inv-muted">
               {t.changesHint}
             </p>
             {changeState.ok === false && (
@@ -130,7 +130,7 @@ export function ReviewPanel({ token, status: initialStatus, revisions, revisions
             )}
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <button type="submit" disabled={sending} className="inv-button w-full sm:w-auto">
-                {sending ? "…" : t.sendChanges}
+                {sending ? t.sending : t.sendChanges}
               </button>
               <button type="button" onClick={() => setWriting(false)} className="inv-link">
                 {t.cancel}
@@ -140,19 +140,19 @@ export function ReviewPanel({ token, status: initialStatus, revisions, revisions
         )}
 
         {revisionsLeft != null && status !== "APPROVED" && (
-          <p className="mt-10 text-xs text-inv-muted">
+          <p className="mt-10 text-sm text-inv-muted">
             {revisionsLeft > 0 ? interpolate(t.revisionsLeft, { count: revisionsLeft }) : t.noRevisionsLeft}
           </p>
         )}
 
         {revisions.length > 0 && (
           <div className="mt-14 border-t border-inv-line pt-10 text-left">
-            <p className="inv-eyebrow text-center text-[0.625rem] text-inv-muted">{t.yourRequests}</p>
+            <p className="inv-label text-center">{t.yourRequests}</p>
             <ul className="mt-6 flex flex-col gap-5">
               {revisions.map((r) => (
                 <li key={r.id} className="border-l border-inv-line pl-4">
                   <p className="whitespace-pre-line text-sm leading-7">{r.message}</p>
-                  <p className="mt-1 text-xs text-inv-muted">
+                  <p className="mt-1 text-[0.8125rem] text-inv-muted">
                     {r.date} · {r.open ? t.requestOpen : t.requestDone}
                   </p>
                 </li>

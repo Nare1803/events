@@ -45,6 +45,15 @@ export function dayKey(date: Date, timeZone: string): string {
   return utcToZonedInput(date, timeZone).date;
 }
 
+/** Whole calendar days from today to `date` in `timeZone`: "today", "tomorrow", "in 249 days", "3 days ago". */
+export function formatDaysAway(date: Date, timeZone: string, now: Date = new Date()): string {
+  const days = Math.round((Date.parse(dayKey(date, timeZone)) - Date.parse(dayKey(now, timeZone))) / 86_400_000);
+  if (days === 0) return "today";
+  if (days === 1) return "tomorrow";
+  if (days === -1) return "yesterday";
+  return days > 0 ? `in ${days} days` : `${-days} days ago`;
+}
+
 /** Editorial date, e.g. "18 · 07 · 2027". */
 export function formatDotDate(date: Date, timeZone: string): string {
   const p = zonedParts(date, timeZone);
@@ -90,6 +99,20 @@ const capitalise = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
 export function formatFullDate(date: Date, timeZone: string, locale: Locale): string {
   const get = namedParts(date, timeZone, locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   return `${capitalise(get("weekday"))}, ${get("day")} ${get("month")} ${get("year")}`;
+}
+
+/**
+ * A date-only ISO string from a date input ("2027-07-18") in words:
+ * "Sunday, 18 July 2027". Null when it is empty or not a real day.
+ */
+export function formatIsoDay(iso: string, locale: Locale = "en"): string | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!match) return null;
+  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  // Noon UTC keeps the day the same whatever the zone used for formatting.
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+  if (date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return formatFullDate(date, "UTC", locale);
 }
 
 /** Day, month and year without Intl's "թ." / "г." suffixes: "15 հունիսի 2027" · "15 June 2027" · "15 июня 2027". */
